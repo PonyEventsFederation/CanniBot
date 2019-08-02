@@ -1,0 +1,12 @@
+{
+	"name": "ponybot",
+	"version": "1.0.0",
+	"description": "PONIES",
+	"main": "bot.js",
+	"author": "steffansk1997",
+	"dependencies": {
+		"discord.io": "^2.5.3",
+		"discord.js": "^11.5.1",
+		"winston": "^3.2.1"
+	}
+}
