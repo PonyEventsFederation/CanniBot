@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
+const talkedRecently = new Set();
 const auth = require('auth');
 
 
@@ -24,8 +25,17 @@ client.on('message', msg => {
 
     if(msg.content.toLowerCase().includes("bizaam"))
     {
-        const bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
-        msg.channel.send(`${bizaamEmoji} BIIZAAAAAMM!!!`);
+        if (talkedRecently.has(msg.author.id)) {
+            msg.channel.send("Wait 1 minute before getting typing this again. - " + msg.author);
+        } else {
+            const bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
+            msg.channel.send(`${bizaamEmoji} BIIZAAAAAMM!!!`);
+
+            talkedRecently.add(msg.author.id);
+            setTimeout(() => {
+              talkedRecently.delete(msg.author.id);
+            }, 60000);
+        }
     }
 
     if(msg.content.startsWith("!when")){
