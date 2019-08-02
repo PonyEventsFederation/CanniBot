@@ -22,7 +22,7 @@ client.on('message', msg => {
         }
     }
 
-    if(msg.content.includes("bizaam"))
+    if(msg.content.toLowerCase().includes("bizaam"))
     {
         const bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
         msg.channel.send(`${bizaamEmoji} BIIZAAAAAMM!!!`);
