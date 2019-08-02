@@ -9,6 +9,8 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
+    const bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
+
     if(msg.author.bot)
         return;
     if (msg.content.startsWith('boop')) {
@@ -28,7 +30,6 @@ client.on('message', msg => {
         if (talkedRecently.has(msg.author.id)) {
             msg.channel.send("Wait 1 minute before getting typing this again. - " + msg.author);
         } else {
-            const bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
             msg.channel.send(`${bizaamEmoji} BIIZAAAAAMM!!!`);
 
             talkedRecently.add(msg.author.id);
@@ -39,7 +40,6 @@ client.on('message', msg => {
     }
 
     if(msg.content.startsWith("!when")){
-        const bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
         msg.channel.send(`${bizaamEmoji} Next Galacon is from august 1st to august 2nd 2020! Hype!!!`)
         let now = Date.now();
         let galacon = Date.parse('01 aug 2020 09:00:00 GMT+2');
