@@ -29,7 +29,7 @@ client.on('message', msg => {
     if(msg.content.toLowerCase().includes("bizaam"))
     {
         if (talkedRecently.has(msg.author.id)) {
-            msg.channel.send("Wait 1 minute before getting typing this again. - " + msg.author);
+            sendCooldownMessage(msg);
         } else {
             msg.channel.send(`${bizaamEmoji} BIIZAAAAAMM!!!`);
 
