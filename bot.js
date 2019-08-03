@@ -79,8 +79,6 @@ client.on('message', msg => {
             }, 60000);
         }
     }
-
-    //console.log(msg);
 });
 
 function sendCooldownMessage(msg, type) {
