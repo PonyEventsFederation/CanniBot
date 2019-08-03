@@ -3,6 +3,7 @@ const client = new Discord.Client();
 const talkedRecently = new Set();
 const auth = require('auth');
 
+var messaged = false;
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
 client.on('ready', () => {
@@ -38,7 +39,7 @@ client.on('message', msg => {
     if(msg.content.toLowerCase().includes("bizaam"))
     {
         if (talkedRecently.has(msg.author.id)) {
-            //msg.channel.send("Wait 1 minute before getting typing this again. - " + msg.author);
+            sendCooldownMessage(msg);
         } else {
             msg.channel.send(`${bizaamEmoji} BIIZAAAAAMM!!!`);
             msg.react(`${bizaamEmoji}`);
@@ -62,7 +63,34 @@ client.on('message', msg => {
         seconds -= minutes * 60;
         msg.channel.send(`${days} days, ${hrs} hours, ${minutes} minutes and ${Math.floor(seconds)} seconds left! IT TAKES FOREVERHHH`);
     }
+
+    if (msg.content.toLowerCase().startsWith('who is best pony')) {
+        if (talkedRecently.has(msg.author.id)) {
+            sendCooldownMessage(msg);
+        } else {
+            msg.channel.send(msg.author + ` ${bizaamEmoji} I am, of course!`);
+
+            talkedRecently.add(msg.author.id);
+            setTimeout(() => {
+              talkedRecently.delete(msg.author.id);
+            }, 60000);
+        }
+    }
+
     //console.log(msg);
 });
+
+function sendCooldownMessage(msg) {
+    if (messaged) {
+        // Do nothing. We don't want to spam everyone all the time.
+    } else {
+        msg.channel.send(`Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment!`)
+
+        messaged = true;
+        setTimeout(() => {
+            messaged = false;
+        }, 60000);
+    }
+}
 
 client.login(auth.token);
