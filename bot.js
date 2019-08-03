@@ -67,7 +67,7 @@ client.on('message', msg => {
         msg.channel.send(`${days} days, ${hrs} hours, ${minutes} minutes and ${Math.floor(seconds)} seconds left! IT TAKES FOREVERHHH`);
     }
 
-    if (msg.content.toLowerCase().startsWith('who is best pony')) {
+    if (msg.content.toLowerCase().includes('who is best pony')) {
         if (talkedRecently.has(msg.channel.id + bestPonyType)) {
             sendCooldownMessage(msg, bestPonyType);
         } else {
