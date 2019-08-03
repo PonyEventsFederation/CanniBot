@@ -4,6 +4,7 @@ const talkedRecently = new Set();
 const channelMessaged = new Set();
 const bizaamType = 'bizaam';
 const bestPonyType = 'best-pony';
+const interjectType = 'interject';
 const auth = require('auth');
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
@@ -76,6 +77,19 @@ client.on('message', msg => {
             talkedRecently.add(msg.channel.id + bestPonyType);
             setTimeout(() => {
               talkedRecently.delete(msg.channel.id + bestPonyType);
+            }, 60000);
+        }
+    }
+
+    if (msg.content.toLowerCase().includes(' is best pony') && !msg.content.toLowerCase().includes('who is best pony')) {
+        if (talkedRecently.has(msg.channel.id + interjectType)) {
+            sendCooldownMessage(msg, interjectType);
+        } else {
+            msg.channel.send(msg.author + ` Nu-uh. I am best pony!`);
+
+            talkedRecently.add(msg.channel.id + interjectType);
+            setTimeout(() => {
+              talkedRecently.delete(msg.channel.id + interjectType);
             }, 60000);
         }
     }
