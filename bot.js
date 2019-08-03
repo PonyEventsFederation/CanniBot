@@ -13,7 +13,7 @@ client.on('message', msg => {
 
     if(msg.author.bot)
         return;
-    if (msg.content.startsWith('boop')) {
+    if (msg.content.toLowerCase().startsWith('boop')) {
         if(msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let users = msg.mentions.users.array();
             for(let i = 0; i < users.length; i++)
