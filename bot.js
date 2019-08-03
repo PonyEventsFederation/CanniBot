@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
+const talkedRecently = new Set();
 const auth = require('auth');
 
 
@@ -8,6 +9,8 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
+    const bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
+
     if(msg.author.bot)
         return;
     if (msg.content.startsWith('boop')) {
@@ -22,14 +25,21 @@ client.on('message', msg => {
         }
     }
 
-    if(msg.content.includes("bizaam"))
+    if(msg.content.toLowerCase().includes("bizaam"))
     {
-        const bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
-        msg.channel.send(`${bizaamEmoji} BIIZAAAAAMM!!!`);
+        if (talkedRecently.has(msg.author.id)) {
+            msg.channel.send("Wait 1 minute before getting typing this again. - " + msg.author);
+        } else {
+            msg.channel.send(`${bizaamEmoji} BIIZAAAAAMM!!!`);
+
+            talkedRecently.add(msg.author.id);
+            setTimeout(() => {
+              talkedRecently.delete(msg.author.id);
+            }, 60000);
+        }
     }
 
     if(msg.content.startsWith("!when")){
-        const bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
         msg.channel.send(`${bizaamEmoji} Next Galacon is from august 1st to august 2nd 2020! Hype!!!`)
         let now = Date.now();
         let galacon = Date.parse('01 aug 2020 09:00:00 GMT+2');
