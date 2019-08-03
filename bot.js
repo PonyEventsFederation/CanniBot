@@ -43,7 +43,7 @@ client.on('message', msg => {
             //msg.channel.send("Wait 1 minute before getting typing this again. - " + msg.author);
         } else {
             msg.channel.send(`${bizaamEmoji} BIIZAAAAAMM!!!`);
-
+            msg.react(`${bizaamEmoji}`);
             talkedRecently.add(msg.author.id);
             setTimeout(() => {
               talkedRecently.delete(msg.author.id);
