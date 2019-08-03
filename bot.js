@@ -1,6 +1,9 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const talkedRecently = new Set();
+const channelMessaged = new Set();
+const bizaamType = 'bizaam';
+const bestPonyType = 'best-pony';
 const auth = require('auth');
 
 var messaged = false;
@@ -38,14 +41,14 @@ client.on('message', msg => {
 
     if(msg.content.toLowerCase().includes("bizaam"))
     {
-        if (talkedRecently.has(msg.author.id)) {
-            sendCooldownMessage(msg);
+        if (talkedRecently.has(msg.channel.id + bizaamType)) {
+            sendCooldownMessage(msg, bizaamType);
         } else {
             msg.channel.send(`${bizaamEmoji} BIIZAAAAAMM!!!`);
             msg.react(`${bizaamEmoji}`);
-            talkedRecently.add(msg.author.id);
+            talkedRecently.add(msg.channel.id + bizaamType);
             setTimeout(() => {
-              talkedRecently.delete(msg.author.id);
+              talkedRecently.delete(msg.channel.id + bizaamType);
             }, 60000);
         }
     }
@@ -65,14 +68,14 @@ client.on('message', msg => {
     }
 
     if (msg.content.toLowerCase().startsWith('who is best pony')) {
-        if (talkedRecently.has(msg.author.id)) {
-            sendCooldownMessage(msg);
+        if (talkedRecently.has(msg.channel.id + bestPonyType)) {
+            sendCooldownMessage(msg, bestPonyType);
         } else {
             msg.channel.send(msg.author + ` ${bizaamEmoji} I am, of course!`);
 
-            talkedRecently.add(msg.author.id);
+            talkedRecently.add(msg.channel.id + bestPonyType);
             setTimeout(() => {
-              talkedRecently.delete(msg.author.id);
+              talkedRecently.delete(msg.channel.id + bestPonyType);
             }, 60000);
         }
     }
@@ -80,15 +83,16 @@ client.on('message', msg => {
     //console.log(msg);
 });
 
-function sendCooldownMessage(msg) {
-    if (messaged) {
+function sendCooldownMessage(msg, type) {
+    if (channelMessaged.has(msg.channel.id + type)) {
         // Do nothing. We don't want to spam everyone all the time.
     } else {
         msg.channel.send(`Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment!`)
 
         messaged = true;
+        channelMessaged.add(msg.channel.id + type);
         setTimeout(() => {
-            messaged = false;
+            channelMessaged.delete(msg.channel.id + type);
         }, 60000);
     }
 }
