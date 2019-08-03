@@ -20,8 +20,6 @@ client.on('message', msg => {
             {
                 msg.channel.send("( ͡° ͜ʖ (\\  *BOOPS* " + '<@' + users[i].id + ">");
             }
-
-            console.log("Got here!")
         }
     }
 
