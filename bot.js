@@ -132,7 +132,7 @@ function getBizaamEmoji() {
 function getHugEmoji()
 {
     if(hugEmoji === null)
-        hugEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
+        hugEmoji = client.emojis.find(emoji => emoji.name === "hug");
     return hugEmoji;
 }
 
