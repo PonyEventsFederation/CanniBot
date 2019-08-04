@@ -5,13 +5,11 @@ const channelMessaged = new Set();
 const bizaamType = 'bizaam';
 const bestPonyType = 'best-pony';
 const interjectType = 'interject';
-const auth = require('auth');
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
 const auth = require('./auth.json');
 
 var messaged = false;
-const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 var bizaamEmoji = null;
 
 client.on('ready', () => {
