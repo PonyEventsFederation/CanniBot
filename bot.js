@@ -7,6 +7,7 @@ const channelMessaged = new Set();
 const bizaamType = 'bizaam';
 const bestPonyType = 'best-pony';
 const interjectType = 'interject';
+const canniBestPonyType = 'canni-best-pony';
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
 const channelUploadID = GetChannelUploadID();
@@ -130,15 +131,28 @@ client.on('message', msg => {
         }
     }
 
-    if (msg.content.toLowerCase().includes(' is best pony') && !msg.content.toLowerCase().includes('who is best pony')) {
+    if (msg.content.toLowerCase().includes(' is best pony') && !msg.content.toLowerCase().includes('who is best pony') && !msg.content.toLowerCase().includes('canni is best pony')) {
         if (talkedRecently.has(msg.channel.id + interjectType)) {
-            sendCooldownMessage(msg, interjectType);
+            // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
         } else {
             msg.channel.send(msg.author + ` Nu-uh. I am best pony!`);
 
             talkedRecently.add(msg.channel.id + interjectType);
             setTimeout(() => {
               talkedRecently.delete(msg.channel.id + interjectType);
+            }, 60000);
+        }
+    }
+
+    if (msg.content.toLowerCase().includes('canni is best pony')) {
+        if (talkedRecently.has(msg.channel.id + canniBestPonyType)) {
+            sendCooldownMessage(msg, canniBestPonyType);
+        } else {
+            msg.channel.send(msg.author + ` I sure am!`);
+
+            talkedRecently.add(msg.channel.id + canniBestPonyType);
+            setTimeout(() => {
+              talkedRecently.delete(msg.channel.id + canniBestPonyType);
             }, 60000);
         }
     }
