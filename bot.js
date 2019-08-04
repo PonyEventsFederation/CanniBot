@@ -25,7 +25,12 @@ client.on('ready', () => {
         let hrs = Math.floor(seconds / 3600);
         seconds -= hrs * 3600;
         let minutes = Math.floor(seconds / 60);
-        client.user.setActivity(`Time to Galacon, hype! ${days} days, ${hrs}:${minutes} left!`, { type: 'LISTENING' });
+        if(minutes < 10) { // Lazyness is real
+            client.user.setActivity(`Time to Galacon, hype! ${days} days, ${hrs}:0${minutes} left!`, { type: 'PLAYING' });
+        }
+        else {
+            client.user.setActivity(`Time to Galacon, hype! ${days} days, ${hrs}:${minutes} left!`, { type: 'PLAYING' });
+        }
     }, 10000); // Every 10s?
 });
 
