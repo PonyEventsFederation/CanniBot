@@ -25,10 +25,10 @@ client.on('ready', () => {
         seconds -= hrs * 3600;
         let minutes = Math.floor(seconds / 60);
         if(minutes < 10) { // Lazyness is real
-            client.user.setActivity(`Time to Galacon, hype! ${days} days, ${hrs}:0${minutes} left!`, { type: 'PLAYING' });
+            client.user.setActivity(`Time to Galacon: ${days} days, ${hrs}:0${minutes} left! Hype!`, { type: 'PLAYING' });
         }
         else {
-            client.user.setActivity(`Time to Galacon, hype! ${days} days, ${hrs}:${minutes} left!`, { type: 'PLAYING' });
+            client.user.setActivity(`Time to Galacon: ${days} days, ${hrs}:${minutes} left! Hype!`, { type: 'PLAYING' });
         }
     }, 10000); // Every 10s?
 });
@@ -53,7 +53,7 @@ client.on('message', msg => {
             sendCooldownMessage(msg, bizaamType);
         } else {
             msg.channel.send(`${getBizaamEmoji()} BIIZAAAAAMM!!!`);
-            msg.react(`${getBizaamEmoji()}`);
+            msg.react(getBizaamEmoji());
             talkedRecently.add(msg.channel.id + bizaamType);
             setTimeout(() => {
               talkedRecently.delete(msg.channel.id + bizaamType);
