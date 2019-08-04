@@ -11,6 +11,7 @@ const auth = require('./auth.json');
 
 var messaged = false;
 var bizaamEmoji = null;
+var hugEmoji = null;
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -99,6 +100,13 @@ client.on('message', msg => {
             }, 60000);
         }
     }
+
+    if(msg.content.toLowerCase().startsWith("hug")){
+        if(msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
+            let user = msg.mentions.users.array()[0];
+            msg.channel.send(`Hey <@${user.id}>! ${msg.author} hugged you ${getHugEmoji()}`)
+        }
+    }
 });
 
 function sendCooldownMessage(msg, type) {
@@ -115,11 +123,17 @@ function sendCooldownMessage(msg, type) {
     }
 }
 
-function getBizaamEmoji()
-{
-    if(bizaamEmoji === null)
+function getBizaamEmoji() {
+    if (bizaamEmoji === null)
         bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
     return bizaamEmoji;
+}
+
+function getHugEmoji()
+{
+    if(hugEmoji === null)
+        hugEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
+    return hugEmoji;
 }
 
 client.login(auth.token);
