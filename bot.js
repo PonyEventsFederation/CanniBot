@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const talkedRecently = new Set();
-const auth = require('auth');
+const auth = require('./auth.json');
 
 var messaged = false;
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
