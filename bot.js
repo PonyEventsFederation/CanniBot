@@ -75,29 +75,40 @@ client.on('message', msg => {
         msg.channel.send(`${days} days, ${hrs} hours, ${minutes} minutes and ${Math.floor(seconds)} seconds left! IT TAKES FOREVERHHH`);
     }
 
-    if (msg.content.toLowerCase().includes('who is best pony')) {
-        if (talkedRecently.has(msg.channel.id + bestPonyType)) {
-            sendCooldownMessage(msg, bestPonyType);
+    if (msg.content.toLowerCase().includes(' is best pony')) {
+        if (msg.content.toLowerCase().includes('who is best pony')){
+            if (talkedRecently.has(msg.channel.id + bestPonyType)) {
+                sendCooldownMessage(msg, bestPonyType);
+            } else {
+                msg.channel.send(msg.author + ` ${getBizaamEmoji()} I am, of course!`);
+
+                talkedRecently.add(msg.channel.id + bestPonyType);
+                setTimeout(() => {
+                  talkedRecently.delete(msg.channel.id + bestPonyType);
+                }, 60000);
+            }
+        } else if (msg.content.toLowerCase().includes('canni is best pony')) {
+              if (talkedRecently.has(msg.channel.id + bestPonyType)) {
+                sendCooldownMessage(msg, bestPonyType);
+            } else {
+                msg.channel.send(msg.author + ` ${getBizaamEmoji()} Of course I am!`);
+
+                talkedRecently.add(msg.channel.id + bestPonyType);
+                setTimeout(() => {
+                  talkedRecently.delete(msg.channel.id + bestPonyType);
+                }, 60000);
+            }
         } else {
-            msg.channel.send(msg.author + ` ${getBizaamEmoji()} I am, of course!`);
+            if (talkedRecently.has(msg.channel.id + interjectType)) {
+                sendCooldownMessage(msg, interjectType);
+            } else {
+                msg.channel.send(msg.author + ` Nu-uh. I am best pony!`);
 
-            talkedRecently.add(msg.channel.id + bestPonyType);
-            setTimeout(() => {
-              talkedRecently.delete(msg.channel.id + bestPonyType);
-            }, 60000);
-        }
-    }
-
-    if (msg.content.toLowerCase().includes(' is best pony') && !msg.content.toLowerCase().includes('who is best pony')) {
-        if (talkedRecently.has(msg.channel.id + interjectType)) {
-            sendCooldownMessage(msg, interjectType);
-        } else {
-            msg.channel.send(msg.author + ` Nu-uh. I am best pony!`);
-
-            talkedRecently.add(msg.channel.id + interjectType);
-            setTimeout(() => {
-              talkedRecently.delete(msg.channel.id + interjectType);
-            }, 60000);
+                talkedRecently.add(msg.channel.id + interjectType);
+                setTimeout(() => {
+                  talkedRecently.delete(msg.channel.id + interjectType);
+                }, 60000);
+            }
         }
     }
 
@@ -134,6 +145,15 @@ function getHugEmoji()
     if(hugEmoji === null)
         hugEmoji = client.emojis.find(emoji => emoji.name === "hug");
     return hugEmoji;
+}
+
+function msg_contains(msg, text)
+{
+    if(msg.content.toLowerCase().includes(text)) {
+        return True;
+    } else {
+        return False;
+    }
 }
 
 client.login(auth.token);
