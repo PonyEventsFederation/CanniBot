@@ -66,7 +66,7 @@ client.on('message', msg => {
                 If you really want to be a Meme Master, mention me with "i REALLY want to be a Meme Master
                 and i will try to find a way to let you in!
                 this message will selfdestruct in 10 seconds`).then(message => message.delete(15000));
-                msg.delete(100);
+                msg.delete(10);
                 
             }
         }
@@ -85,7 +85,7 @@ client.on('message', msg => {
                 ${getBizaamEmoji()} BIIZAAAAAMM!!!
                 This message will selfdestruct in 10 seconds`).then(message => message.delete(15000));
                 msg.member.addRole(memeroll).catch(console.error);
-                msg.delete(100);
+                msg.delete(10);
             }
         }
     }
