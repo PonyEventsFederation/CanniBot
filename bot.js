@@ -5,6 +5,7 @@ const auth = require('./auth.json');
 
 var messaged = false;
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
+var bizaamEmoji = null;
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -22,7 +23,6 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
-    const bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
 
     if(msg.author.bot)
         return;
@@ -41,8 +41,8 @@ client.on('message', msg => {
         if (talkedRecently.has(msg.author.id)) {
             sendCooldownMessage(msg);
         } else {
-            msg.channel.send(`${bizaamEmoji} BIIZAAAAAMM!!!`);
-            msg.react(`${bizaamEmoji}`);
+            msg.channel.send(`${getBizaamEmoji()} BIIZAAAAAMM!!!`);
+            msg.react(`${getBizaamEmoji()}`);
             talkedRecently.add(msg.author.id);
             setTimeout(() => {
               talkedRecently.delete(msg.author.id);
@@ -51,7 +51,7 @@ client.on('message', msg => {
     }
 
     if(msg.content.startsWith("!when")){
-        msg.channel.send(`${bizaamEmoji} Next Galacon is from august 1st to august 2nd 2020! Hype!!!`)
+        msg.channel.send(`${getBizaamEmoji()} Next Galacon is from august 1st to august 2nd 2020! Hype!!!`)
         let now = Date.now();
         let diff =  galaconDate - now;
         var seconds = parseInt(diff) / 1000;
@@ -68,7 +68,7 @@ client.on('message', msg => {
         if (talkedRecently.has(msg.author.id)) {
             sendCooldownMessage(msg);
         } else {
-            msg.channel.send(msg.author + ` ${bizaamEmoji} I am, of course!`);
+            msg.channel.send(msg.author + ` ${getBizaamEmoji()} I am, of course!`);
 
             talkedRecently.add(msg.author.id);
             setTimeout(() => {
@@ -91,6 +91,13 @@ function sendCooldownMessage(msg) {
             messaged = false;
         }, 60000);
     }
+}
+
+function getBizaamEmoji()
+{
+    if(bizaamEmoji === null)
+        bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
+    return bizaamEmoji;
 }
 
 client.login(auth.token);
