@@ -129,7 +129,7 @@ client.on('message', msg => {
 
     if (msg.content.toLowerCase().includes(' is best pony') && !msg.content.toLowerCase().includes('who is best pony') && !msg.content.toLowerCase().includes('canni is best pony')) {
         if (talkedRecently.has(msg.channel.id + interjectType)) {
-            sendCooldownMessage(msg, interjectType);
+            // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
         } else {
             msg.channel.send(msg.author + ` Nu-uh. I am best pony!`);
 
