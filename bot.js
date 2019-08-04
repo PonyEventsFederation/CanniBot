@@ -5,14 +5,13 @@ const channelMessaged = new Set();
 const bizaamType = 'bizaam';
 const bestPonyType = 'best-pony';
 const interjectType = 'interject';
-const auth = require('auth');
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
 const auth = require('./auth.json');
 
 var messaged = false;
-const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 var bizaamEmoji = null;
+var hugEmoji = null;
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -25,7 +24,12 @@ client.on('ready', () => {
         let hrs = Math.floor(seconds / 3600);
         seconds -= hrs * 3600;
         let minutes = Math.floor(seconds / 60);
-        client.user.setActivity(`Time to Galacon, hype! ${days} days, ${hrs}:${minutes} left!`, { type: 'LISTENING' });
+        if(minutes < 10) { // Lazyness is real
+            client.user.setActivity(`Time to Galacon: ${days} days, ${hrs}:0${minutes} left! Hype!`, { type: 'PLAYING' });
+        }
+        else {
+            client.user.setActivity(`Time to Galacon: ${days} days, ${hrs}:${minutes} left! Hype!`, { type: 'PLAYING' });
+        }
     }, 10000); // Every 10s?
 });
 
@@ -41,15 +45,53 @@ client.on('message', msg => {
                 msg.channel.send("( ͡° ͜ʖ (\\  *BOOPS* " + '<@' + users[i].id + ">");
             }
         }
+		msg.delete(0);//make sure the bot gets manage text permissions , otherwise it will fail silently
     }
-
+	//i noticed there was a lot of interest in becomming a memer, sooo i thought lets automate!
+	//the bot will need to have the rights to give/take meme rolls
+	if (msg.content.toLowerCase().includes('i want to be a meme master')) {
+		if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
+			let memeroll = msg.guild.roles.find(role => role.name === "Meme");
+			if(msg.member.roles.some(r=>["Meme"].includes(r.name))) {
+				msg.channel.send(`${msg.author} your already well on your way to become a Meme Master`);
+			}
+			else {
+				msg.channel.send(`${msg.author}
+				so you want to be a Meme Master huh?
+				You better know there are hidden dangers waiting for you there
+				And there is not much i can do to help you...
+				Neither can the rest of the support crew
+				ARRRG there be pirates ahead!
+				If you really want to be a Meme Master, mention me with "i REALLY want to be a Meme Master
+				and i will try to find a way to let you in!`);
+			}
+		}
+	}
+	if (msg.content.toLowerCase().includes('i really want to be a meme master')) {// create stuff to automaticly become a memer
+		if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
+			let memeroll = msg.guild.roles.find(role => role.name === "Meme");
+			if(msg.member.roles.some(r=>["Meme"].includes(r.name))) {
+				msg.channel.send(`${msg.author} your already well on your way to become a Meme Master`);
+			}
+			else {
+				msg.channel.send(`${msg.author} You have sealed your destiny!
+				I will use my special powers to open the gateway between here and the memes.
+				Behold the horrors, greater then what lives in the Everfree forest...
+				BEHOLD! Bronies in the wild!!!`);
+				msg.channel.send(`${getBizaamEmoji()} BIIZAAAAAMM!!!`);
+				msg.member.addRole(memeroll).catch(console.error);
+			}
+		}
+	}
+	//end of meme master control software
+	
     if(msg.content.toLowerCase().includes("bizaam"))
     {
         if (talkedRecently.has(msg.channel.id + bizaamType)) {
             sendCooldownMessage(msg, bizaamType);
         } else {
             msg.channel.send(`${getBizaamEmoji()} BIIZAAAAAMM!!!`);
-            msg.react(`${getBizaamEmoji()}`);
+            msg.react(getBizaamEmoji());
             talkedRecently.add(msg.channel.id + bizaamType);
             setTimeout(() => {
               talkedRecently.delete(msg.channel.id + bizaamType);
@@ -96,6 +138,13 @@ client.on('message', msg => {
             }, 60000);
         }
     }
+
+    if(msg.content.toLowerCase().startsWith("hug")){
+        if(msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
+            let user = msg.mentions.users.array()[0];
+            msg.channel.send(`Hey <@${user.id}>! ${msg.author} hugged you ${getHugEmoji()}`)
+        }
+    }
 });
 
 function sendCooldownMessage(msg, type) {
@@ -112,11 +161,25 @@ function sendCooldownMessage(msg, type) {
     }
 }
 
-function getBizaamEmoji()
-{
-    if(bizaamEmoji === null)
-        bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
+function getBizaamEmoji() {
+    if (bizaamEmoji === null) {
+		bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
+		if (bizaamEmoji === null) {// added little code for when the bot is running ouside of galacon server
+			bizaamEmoji = "😃";
+		}
+	}
     return bizaamEmoji;
+}
+
+function getHugEmoji()
+{
+    if(hugEmoji === null) {
+		hugEmoji = client.emojis.find(emoji => emoji.name === "hug");
+		if(hugEmoji === null) {// added little code for when the bot is running ouside of galacon server
+				hugEmoji = "🤗";
+		}
+	}
+    return hugEmoji;
 }
 
 client.login(auth.token);
