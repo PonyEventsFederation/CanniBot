@@ -37,7 +37,7 @@ client.on('message', msg => {
 
     if(msg.author.bot)
         return;
-    if (msg.content.toLowerCase().startsWith('boop')) {
+    if (msg_starts(msg, 'boop')) {
         if(msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let users = msg.mentions.users.array();
             for(let i = 0; i < users.length; i++)
@@ -47,7 +47,7 @@ client.on('message', msg => {
         }
     }
 
-    if(msg.content.toLowerCase().includes("bizaam"))
+    if(msg_contains(msg, "bizaam"))
     {
         if (talkedRecently.has(msg.channel.id + bizaamType)) {
             sendCooldownMessage(msg, bizaamType);
@@ -61,7 +61,7 @@ client.on('message', msg => {
         }
     }
 
-    if(msg.content.startsWith("!when")){
+    if(msg_starts(msg, "!when")){
         msg.channel.send(`${getBizaamEmoji()} Next Galacon is from august 1st to august 2nd 2020! Hype!!!`)
         let now = Date.now();
         let diff =  galaconDate - now;
@@ -75,8 +75,8 @@ client.on('message', msg => {
         msg.channel.send(`${days} days, ${hrs} hours, ${minutes} minutes and ${Math.floor(seconds)} seconds left! IT TAKES FOREVERHHH`);
     }
 
-    if (msg.content.toLowerCase().includes(' is best pony')) {
-        if (msg.content.toLowerCase().includes('who is best pony')){
+    if (msg_contains(msg, ' is best pony')) {
+        if (msg_contains(msg, 'who is best pony')){
             if (talkedRecently.has(msg.channel.id + bestPonyType)) {
                 sendCooldownMessage(msg, bestPonyType);
             } else {
@@ -87,7 +87,7 @@ client.on('message', msg => {
                   talkedRecently.delete(msg.channel.id + bestPonyType);
                 }, 60000);
             }
-        } else if (msg.content.toLowerCase().includes('canni is best pony')) {
+        } else if (msg_contains(msg, 'canni is best pony')) {
               if (talkedRecently.has(msg.channel.id + bestPonyType)) {
                 sendCooldownMessage(msg, bestPonyType);
             } else {
@@ -112,7 +112,7 @@ client.on('message', msg => {
         }
     }
 
-    if(msg.content.toLowerCase().startsWith("hug")){
+    if(msg_starts(msg, "hug")){
         if(msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let user = msg.mentions.users.array()[0];
             msg.channel.send(`Hey <@${user.id}>! ${msg.author} hugged you ${getHugEmoji()}`)
@@ -150,6 +150,15 @@ function getHugEmoji()
 function msg_contains(msg, text)
 {
     if(msg.content.toLowerCase().includes(text)) {
+        return True;
+    } else {
+        return False;
+    }
+}
+
+function msg_starts(msg, text)
+{
+    if(msg.content.toLowerCase().startsWith(text)) {
         return True;
     } else {
         return False;
