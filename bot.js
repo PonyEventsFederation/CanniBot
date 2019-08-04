@@ -1,3 +1,5 @@
+const request = require('request');
+
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const talkedRecently = new Set();
@@ -6,6 +8,8 @@ const bizaamType = 'bizaam';
 const bestPonyType = 'best-pony';
 const interjectType = 'interject';
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
+
+const channelUploadID = GetChannelUploadID();
 
 const auth = require('./auth.json');
 
@@ -180,6 +184,32 @@ function getHugEmoji()
         }
     }
     return hugEmoji;
+}
+
+function GetChannelUploadID(channelName = "CanniSoda")
+{
+    request('https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=${channelName}&key=${auth.youtube}', function (error, response, body) {
+        if(response.statusCode !== 200) {
+            console.log("Received error ${response.statusCode} with message \"${body.error.message}\"");
+            return null;
+        }
+    });
+    console.log("Received id ${body.items[0].contentDetails.relatedPlaylists.uploads}");
+    return body.items[0].contentDetails.relatedPlaylists.uploads;
+}
+
+function getVideoList()
+{
+    if(channelUploadID === null)
+        return {};
+    request('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${channelUploadID}&key=${auth.youtube}', function (error, response, body) {
+        if(response.statusCode !== 200) {
+            console.log("Received error ${response.statusCode} with message \"${body.error.message}\"");
+            return {};
+        }
+        let videoData = JSON.parse(body);
+        return videoData;
+    });
 }
 
 client.login(auth.token);
