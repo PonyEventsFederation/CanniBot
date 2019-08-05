@@ -1,4 +1,4 @@
-const http = require('http');
+const https = require('https');
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -193,6 +193,9 @@ client.on('message', msg => {
             msg.channel.send(`Hey <@${user.id}>! ${msg.author} hugged you ${getHugEmoji()}`)
         }
     }
+    if (msg_starts(msg, "youtube")) {
+        msg.channel.send(`Found token "${GetChannelUploadID()}" for CanniSoda upload list"`);
+    }
 });
 
 function sendCooldownMessage(msg, type) {
@@ -231,17 +234,18 @@ function getHugEmoji() {
 
 function GetChannelUploadID(channelName = "CanniSoda")
 {
-    http.get('https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=${channelName}&key=${auth.youtube}', (res) => {
-        if(res !== 200) {
-            console.log("Received error ${res} with message \"${body.error.message}\"");
-            res.resume(); // Clear response data to free up memory
-            return null;
-        }
+    https.get('https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=${channelName}&key=${auth.youtube}', (res) => {
         res.setEncoding('utf8');
         let rawData = '';
         res.on('data', (chunk) => {rawData += chunk;});
         res.on('end', () => {
             let data = JSON.parse(rawData);
+            if(res !== 200) {
+                console.log("Received error ${res} with message \"${data.error.message}\"");
+                res.resume(); // Clear response data to free up memory
+                return null;
+            }
+            res.resume();
             return data.items[0].contentDetails.relatedPlaylists.uploads;
         });
     });
