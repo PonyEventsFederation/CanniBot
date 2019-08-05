@@ -9,6 +9,7 @@ const bestPonyType = 'best-pony';
 const assfartType = 'assfart';
 const interjectType = 'interject';
 const canniBestPonyType = 'canni-best-pony';
+const bizaamBestPonyType = 'bizaam-best-pony';
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
 //const channelUploadID = GetChannelUploadID();
@@ -95,7 +96,7 @@ client.on('message', msg => {
     }
 
     // "msg_contains(msg, text)" is a shorter version of "msg.content.toLowerCase().includes(text)"
-    if (msg_contains(msg, "bizaam")) {
+    if (msg_contains(msg, "bizaam") && !msg_contains(msg, 'bizaam is best pony')) {
         if (talkedRecently.has(msg.channel.id + bizaamType)) {
             sendCooldownMessage(msg, bizaamType);
         } else {
@@ -159,6 +160,17 @@ client.on('message', msg => {
                 talkedRecently.add(msg.channel.id + canniBestPonyType);
                 setTimeout(() => {
                   talkedRecently.delete(msg.channel.id + canniBestPonyType);
+                }, 60000);
+            }
+        } else if (msg_contains(msg, 'bizaam is best pony')) {
+            if (talkedRecently.has(msg.channel.id + bizaamBestPonyType)) {
+                // Don't send CD message here. It's not required.
+            } else {
+                msg.channel.send(msg.author + ` Bizaam isn't a pony, silly...`);
+
+                talkedRecently.add(msg.channel.id + bizaamBestPonyType);
+                setTimeout(() => {
+                  talkedRecently.delete(msg.channel.id + bizaamBestPonyType);
                 }, 60000);
             }
         } else {
