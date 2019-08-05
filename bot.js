@@ -93,8 +93,6 @@ client.on('message', msg => {
             }
         }
     }
-    //end of meme master control software
-
 
     // "msg_contains(msg, text)" is a shorter version of "msg.content.toLowerCase().includes(text)"
     if (msg_contains(msg, "bizaam")) {
@@ -112,9 +110,8 @@ client.on('message', msg => {
             }, 60000);
         }
     }
-  
-    if(msg.content.toLowerCase().includes("assfart"))
-    {
+
+    if (msg.content.toLowerCase().includes("assfart")) {
         if (talkedRecently.has(msg.channel.id + assfartType)) {
             sendCooldownMessage(msg, assfartType);
         } else {
@@ -123,10 +120,10 @@ client.on('message', msg => {
               talkedRecently.delete(msg.channel.id + assfartType);
             }, 60000);
         }
-    }    
-    
+    }
+
     // "msg_starts(msg, text)" is a shorter version of "msg.content.toLowerCase().startsWith(text)"
-    if(msg_starts(msg,"!when")){
+    if (msg_starts(msg,"!when")) {
         msg.channel.send(`${getBizaamEmoji()} Next Galacon is from august 1st to august 2nd 2020! Hype!!!`)
         let now = Date.now();
         let diff =  galaconDate - now;
@@ -147,7 +144,7 @@ client.on('message', msg => {
                 sendCooldownMessage(msg, bestPonyType);
             } else {
                 msg.channel.send(msg.author + ` ${getBizaamEmoji()} I am, of course!`);
-    
+
                 talkedRecently.add(msg.channel.id + bestPonyType);
                 setTimeout(() => {
                   talkedRecently.delete(msg.channel.id + bestPonyType);
@@ -158,7 +155,7 @@ client.on('message', msg => {
                 sendCooldownMessage(msg, canniBestPonyType);
             } else {
                 msg.channel.send(msg.author + ` I sure am!`);
-    
+
                 talkedRecently.add(msg.channel.id + canniBestPonyType);
                 setTimeout(() => {
                   talkedRecently.delete(msg.channel.id + canniBestPonyType);
@@ -169,7 +166,7 @@ client.on('message', msg => {
                 // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
             } else {
                 msg.channel.send(msg.author + ` Nu-uh. I am best pony!`);
-    
+
                 talkedRecently.add(msg.channel.id + interjectType);
                 setTimeout(() => {
                   talkedRecently.delete(msg.channel.id + interjectType);
@@ -178,8 +175,8 @@ client.on('message', msg => {
         }
     }
 
-    if(msg_starts(msg,"hug")){
-        if(msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
+    if (msg_starts(msg,"hug")) {
+        if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let user = msg.mentions.users.array()[0];
             msg.channel.send(`Hey <@${user.id}>! ${msg.author} hugged you ${getHugEmoji()}`)
         }
@@ -210,8 +207,7 @@ function getBizaamEmoji() {
     return bizaamEmoji;
 }
 
-function getHugEmoji()
-{
+function getHugEmoji() {
     if(hugEmoji === null) {
         hugEmoji = client.emojis.find(emoji => emoji.name === "hug");
         if(hugEmoji === null) {// added little code for when the bot is running ouside of galacon server
@@ -249,8 +245,7 @@ function getVideoList()
 */
 
 // "msg_contains(msg, text)" is a shorter version of "msg.content.toLowerCase().includes(text)"
-function msg_contains(msg, text)
-{
+function msg_contains(msg, text) {
     if(msg.content.toLowerCase().includes(text)) {
         return true;
     } else {
@@ -259,8 +254,7 @@ function msg_contains(msg, text)
 }
 
 // "msg_starts(msg, text)" is a shorter version of "msg.content.toLowerCase().startsWith(text)"
-function msg_starts(msg, text)
-{
+function msg_starts(msg, text) {
     if(msg.content.toLowerCase().startsWith(text)) {
         return true;
     } else {
