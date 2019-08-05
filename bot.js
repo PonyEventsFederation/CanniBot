@@ -4,6 +4,7 @@ const talkedRecently = new Set();
 const channelMessaged = new Set();
 const bizaamType = 'bizaam';
 const bestPonyType = 'best-pony';
+const assfartType = 'assfart';
 const interjectType = 'interject';
 const canniBestPonyType = 'canni-best-pony';
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
@@ -64,7 +65,9 @@ client.on('message', msg => {
                 Neither can the rest of the support crew
                 ARRRG there be pirates ahead!
                 If you really want to be a Meme Master, mention me with "i REALLY want to be a Meme Master
-                and i will try to find a way to let you in!`);
+                and i will try to find a way to let you in!
+                this message will selfdestruct in 10 seconds`).then(message => message.delete(15000));
+                msg.delete(10);
             }
         }
     }
@@ -78,9 +81,11 @@ client.on('message', msg => {
                 msg.channel.send(`${msg.author} You have sealed your destiny!
                 I will use my special powers to open the gateway between here and the memes.
                 Behold the horrors, greater then what lives in the Everfree forest...
-                BEHOLD! Bronies in the wild!!!`);
-                msg.channel.send(`${getBizaamEmoji()} BIIZAAAAAMM!!!`);
+                BEHOLD! Bronies in the wild!!!
+                ${getBizaamEmoji()} BIIZAAAAAMM!!!
+                This message will selfdestruct in 10 seconds`).then(message => message.delete(15000));
                 msg.member.addRole(memeroll).catch(console.error);
+                msg.delete(10);
             }
         }
     }
@@ -101,7 +106,18 @@ client.on('message', msg => {
             }, 60000);
         }
     }
-    
+  
+    if(msg.content.toLowerCase().includes("assfart"))
+    {
+        if (talkedRecently.has(msg.channel.id + assfartType)) {
+            sendCooldownMessage(msg, assfartType);
+        } else {
+            msg.channel.send(`Shut up ${msg.author}, its Ausfahrt!`);
+            setTimeout(() => {
+              talkedRecently.delete(msg.channel.id + assfartType);
+            }, 60000);
+        }
+    }    
     
     // "msg_starts(msg, text)" is a shorter version of "msg.content.toLowerCase().startsWith(text)"
     if(msg_starts(msg,"!when")){
