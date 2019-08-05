@@ -10,6 +10,7 @@ const assfartType = 'assfart';
 const interjectType = 'interject';
 const canniBestPonyType = 'canni-best-pony';
 const bizaamBestPonyType = 'bizaam-best-pony';
+const assFartBestPonyType = 'assfart-best-pony';
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
 //const channelUploadID = GetChannelUploadID();
@@ -114,7 +115,7 @@ client.on('message', msg => {
         }
     }
 
-    if (msg_contains(msg,"assfart")) {
+    if (msg_contains(msg, "assfart") && !msg_contains(msg, 'assfart is best pony')) {
         if (controlTalkedRecently(msg, assfartType)) {
             msg.channel.send(`Shut up ${msg.author}, its Ausfahrt!`);
         }
@@ -147,7 +148,11 @@ client.on('message', msg => {
             if (controlTalkedRecently(msg, bizaamBestPonyType, false)) { // Don't send CD message here. It's not required.
                 msg.channel.send(msg.author + ` A bizaam isn't a pony, silly...`);
             }
-        } else {
+        } else if (msg_contains(msg, 'assfart is best pony')) {
+            if (controlTalkedRecently(msg, assFartBestPonyType, false)) { // Don't send CD message here. It's not required.
+                msg.channel.send(msg.author + ` Rude!`);
+            }
+        }else {
             if (controlTalkedRecently(msg, interjectType, false)) { // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
                 msg.channel.send(msg.author + ` Nu-uh. I am best pony!`);
             }
