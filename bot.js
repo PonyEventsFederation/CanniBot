@@ -104,7 +104,7 @@ client.on('message', msg => {
     }
 
 
-    if (msg_contains(msg, "bizaam") && !msg_contains(msg, 'bizaam is best pony')) {
+    if (msg_contains(msg, "bizaam") && (!msg_contains(msg, 'bizaam is best pony') && !msg_contains(msg, `${getBizaamEmoji()} is best pony`))) {
         if (controlTalkedRecently(msg, bizaamType)) {
             msg.channel.send(`${getBizaamEmoji()} BIIZAAAAAMM!!!`).then(sentEmbed => {
                 sentEmbed.react(getBizaamEmoji())
@@ -143,9 +143,9 @@ client.on('message', msg => {
             if (controlTalkedRecently(msg, canniBestPonyType)) {
                 msg.channel.send(msg.author + ` I sure am!`);
             }
-        } else if (msg_contains(msg, 'bizaam is best pony')) {
+        } else if (msg_contains(msg, 'bizaam is best pony') || msg_contains(msg, `${getBizaamEmoji()} is best pony`)) {
             if (controlTalkedRecently(msg, bizaamBestPonyType, false)) { // Don't send CD message here. It's not required.
-                msg.channel.send(msg.author + ` Bizaam isn't a pony, silly...`);
+                msg.channel.send(msg.author + ` A bizaam isn't a pony, silly...`);
             }
         } else {
             if (controlTalkedRecently(msg, interjectType, false)) { // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
