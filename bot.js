@@ -1,4 +1,4 @@
-const request = require('request');
+//const request = require('request');
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -6,11 +6,13 @@ const talkedRecently = new Set();
 const channelMessaged = new Set();
 const bizaamType = 'bizaam';
 const bestPonyType = 'best-pony';
+const assfartType = 'assfart';
 const interjectType = 'interject';
 const canniBestPonyType = 'canni-best-pony';
+const bizaamBestPonyType = 'bizaam-best-pony';
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
-const channelUploadID = GetChannelUploadID();
+//const channelUploadID = GetChannelUploadID();
 
 const auth = require('./auth.json');
 
@@ -42,7 +44,7 @@ client.on('message', msg => {
 
     if(msg.author.bot)
         return;
-    if (msg.content.toLowerCase().startsWith('boop')) {
+    if (msg_starts(msg,'boop')) {
         if(msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let users = msg.mentions.users.array();
             for(let i = 0; i < users.length; i++)
@@ -54,7 +56,7 @@ client.on('message', msg => {
     }
     //i noticed there was a lot of interest in becomming a memer, sooo i thought lets automate!
     //the bot will need to have the rights to give/take meme rolls
-    if (msg.content.toLowerCase().includes('i want to be a meme master')) {
+    if (msg_contains(msg, 'i want to be a meme master')) {
         if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
             let memeroll = msg.guild.roles.find(role => role.name === "Meme");
             if(msg.member.roles.some(r=>["Meme"].includes(r.name))) {
@@ -68,11 +70,13 @@ client.on('message', msg => {
                 Neither can the rest of the support crew
                 ARRRG there be pirates ahead!
                 If you really want to be a Meme Master, mention me with "i REALLY want to be a Meme Master
-                and i will try to find a way to let you in!`);
+                and i will try to find a way to let you in!
+                this message will selfdestruct in 10 seconds`).then(message => message.delete(15000));
+                msg.delete(10);
             }
         }
     }
-    if (msg.content.toLowerCase().includes('i really want to be a meme master')) {// create stuff to automaticly become a memer
+    if (msg_contains(msg, 'i really want to be a meme master')) {// create stuff to automaticly become a memer
         if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
             let memeroll = msg.guild.roles.find(role => role.name === "Meme");
             if(msg.member.roles.some(r=>["Meme"].includes(r.name))) {
@@ -82,20 +86,24 @@ client.on('message', msg => {
                 msg.channel.send(`${msg.author} You have sealed your destiny!
                 I will use my special powers to open the gateway between here and the memes.
                 Behold the horrors, greater then what lives in the Everfree forest...
-                BEHOLD! Bronies in the wild!!!`);
-                msg.channel.send(`${getBizaamEmoji()} BIIZAAAAAMM!!!`);
+                BEHOLD! Bronies in the wild!!!
+                ${getBizaamEmoji()} BIIZAAAAAMM!!!
+                This message will selfdestruct in 10 seconds`).then(message => message.delete(15000));
                 msg.member.addRole(memeroll).catch(console.error);
+                msg.delete(10);
             }
         }
     }
-    //end of meme master control software
-    
-    if(msg.content.toLowerCase().includes("bizaam"))
-    {
+
+    // "msg_contains(msg, text)" is a shorter version of "msg.content.toLowerCase().includes(text)"
+    if (msg_contains(msg, "bizaam") && !msg_contains(msg, 'bizaam is best pony')) {
         if (talkedRecently.has(msg.channel.id + bizaamType)) {
             sendCooldownMessage(msg, bizaamType);
         } else {
-            msg.channel.send(`${getBizaamEmoji()} BIIZAAAAAMM!!!`);
+            msg.channel.send(`${getBizaamEmoji()} BIIZAAAAAMM!!!`).then(sentEmbed => {
+                sentEmbed.react(getBizaamEmoji())
+            });
+
             msg.react(getBizaamEmoji());
             talkedRecently.add(msg.channel.id + bizaamType);
             setTimeout(() => {
@@ -104,7 +112,19 @@ client.on('message', msg => {
         }
     }
 
-    if(msg.content.startsWith("!when")){
+    if (msg.content.toLowerCase().includes("assfart")) {
+        if (talkedRecently.has(msg.channel.id + assfartType)) {
+            sendCooldownMessage(msg, assfartType);
+        } else {
+            msg.channel.send(`Shut up ${msg.author}, its Ausfahrt!`);
+            setTimeout(() => {
+              talkedRecently.delete(msg.channel.id + assfartType);
+            }, 60000);
+        }
+    }
+
+    // "msg_starts(msg, text)" is a shorter version of "msg.content.toLowerCase().startsWith(text)"
+    if (msg_starts(msg,"!when")) {
         msg.channel.send(`${getBizaamEmoji()} Next Galacon is from august 1st to august 2nd 2020! Hype!!!`)
         let now = Date.now();
         let diff =  galaconDate - now;
@@ -118,47 +138,57 @@ client.on('message', msg => {
         msg.channel.send(`${days} days, ${hrs} hours, ${minutes} minutes and ${Math.floor(seconds)} seconds left! IT TAKES FOREVERHHH`);
     }
 
-    if (msg.content.toLowerCase().includes('who is best pony')) {
-        if (talkedRecently.has(msg.channel.id + bestPonyType)) {
-            sendCooldownMessage(msg, bestPonyType);
-        } else {
-            msg.channel.send(msg.author + ` ${getBizaamEmoji()} I am, of course!`);
 
-            talkedRecently.add(msg.channel.id + bestPonyType);
-            setTimeout(() => {
-              talkedRecently.delete(msg.channel.id + bestPonyType);
-            }, 60000);
+    if (msg_contains(msg, ' is best pony')) {
+        if (msg_contains(msg, 'who is best pony')) {
+            if (talkedRecently.has(msg.channel.id + bestPonyType)) {
+                sendCooldownMessage(msg, bestPonyType);
+            } else {
+                msg.channel.send(msg.author + ` ${getBizaamEmoji()} I am, of course!`);
+
+                talkedRecently.add(msg.channel.id + bestPonyType);
+                setTimeout(() => {
+                  talkedRecently.delete(msg.channel.id + bestPonyType);
+                }, 60000);
+            }
+        } else if (msg_contains(msg, 'canni is best pony') || msg_contains(msg, 'canni soda is best pony')) {
+            if (talkedRecently.has(msg.channel.id + canniBestPonyType)) {
+                sendCooldownMessage(msg, canniBestPonyType);
+            } else {
+                msg.channel.send(msg.author + ` I sure am!`);
+
+                talkedRecently.add(msg.channel.id + canniBestPonyType);
+                setTimeout(() => {
+                  talkedRecently.delete(msg.channel.id + canniBestPonyType);
+                }, 60000);
+            }
+        } else if (msg_contains(msg, 'bizaam is best pony')) {
+            if (talkedRecently.has(msg.channel.id + bizaamBestPonyType)) {
+                // Don't send CD message here. It's not required.
+            } else {
+                msg.channel.send(msg.author + ` Bizaam isn't a pony, silly...`);
+
+                talkedRecently.add(msg.channel.id + bizaamBestPonyType);
+                setTimeout(() => {
+                  talkedRecently.delete(msg.channel.id + bizaamBestPonyType);
+                }, 60000);
+            }
+        } else {
+            if (talkedRecently.has(msg.channel.id + interjectType)) {
+                // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
+            } else {
+                msg.channel.send(msg.author + ` Nu-uh. I am best pony!`);
+
+                talkedRecently.add(msg.channel.id + interjectType);
+                setTimeout(() => {
+                  talkedRecently.delete(msg.channel.id + interjectType);
+                }, 60000);
+            }
         }
     }
 
-    if (msg.content.toLowerCase().includes(' is best pony') && !msg.content.toLowerCase().includes('who is best pony') && !msg.content.toLowerCase().includes('canni is best pony')) {
-        if (talkedRecently.has(msg.channel.id + interjectType)) {
-            // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
-        } else {
-            msg.channel.send(msg.author + ` Nu-uh. I am best pony!`);
-
-            talkedRecently.add(msg.channel.id + interjectType);
-            setTimeout(() => {
-              talkedRecently.delete(msg.channel.id + interjectType);
-            }, 60000);
-        }
-    }
-
-    if (msg.content.toLowerCase().includes('canni is best pony')) {
-        if (talkedRecently.has(msg.channel.id + canniBestPonyType)) {
-            sendCooldownMessage(msg, canniBestPonyType);
-        } else {
-            msg.channel.send(msg.author + ` I sure am!`);
-
-            talkedRecently.add(msg.channel.id + canniBestPonyType);
-            setTimeout(() => {
-              talkedRecently.delete(msg.channel.id + canniBestPonyType);
-            }, 60000);
-        }
-    }
-
-    if(msg.content.toLowerCase().startsWith("hug")){
-        if(msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
+    if (msg_starts(msg,"hug")) {
+        if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let user = msg.mentions.users.array()[0];
             msg.channel.send(`Hey <@${user.id}>! ${msg.author} hugged you ${getHugEmoji()}`)
         }
@@ -189,8 +219,7 @@ function getBizaamEmoji() {
     return bizaamEmoji;
 }
 
-function getHugEmoji()
-{
+function getHugEmoji() {
     if(hugEmoji === null) {
         hugEmoji = client.emojis.find(emoji => emoji.name === "hug");
         if(hugEmoji === null) {// added little code for when the bot is running ouside of galacon server
@@ -200,7 +229,7 @@ function getHugEmoji()
     return hugEmoji;
 }
 
-<<<<<<< HEAD
+/*
 function GetChannelUploadID(channelName = "CanniSoda")
 {
     request('https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=${channelName}&key=${auth.youtube}', function (error, response, body) {
@@ -226,8 +255,25 @@ function getVideoList()
         return videoData;
     });
 }
+*/
+
+// "msg_contains(msg, text)" is a shorter version of "msg.content.toLowerCase().includes(text)"
+function msg_contains(msg, text) {
+    if(msg.content.toLowerCase().includes(text)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// "msg_starts(msg, text)" is a shorter version of "msg.content.toLowerCase().startsWith(text)"
+function msg_starts(msg, text) {
+    if(msg.content.toLowerCase().startsWith(text)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 
 client.login(auth.token);
-=======
-client.login(auth.token);
->>>>>>> aa42e6470aaec715575bde3c72d5ebef6b2f3d09
