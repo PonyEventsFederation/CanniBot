@@ -95,35 +95,23 @@ client.on('message', msg => {
         }
     }
 
-    // "msg_contains(msg, text)" is a shorter version of "msg.content.toLowerCase().includes(text)"
+
     if (msg_contains(msg, "bizaam") && !msg_contains(msg, 'bizaam is best pony')) {
-        if (talkedRecently.has(msg.channel.id + bizaamType)) {
-            sendCooldownMessage(msg, bizaamType);
-        } else {
+        if (controlTalkedRecently(msg, bizaamType)) {
             msg.channel.send(`${getBizaamEmoji()} BIIZAAAAAMM!!!`).then(sentEmbed => {
                 sentEmbed.react(getBizaamEmoji())
             });
 
             msg.react(getBizaamEmoji());
-            talkedRecently.add(msg.channel.id + bizaamType);
-            setTimeout(() => {
-              talkedRecently.delete(msg.channel.id + bizaamType);
-            }, 60000);
         }
     }
 
-    if (msg.content.toLowerCase().includes("assfart")) {
-        if (talkedRecently.has(msg.channel.id + assfartType)) {
-            sendCooldownMessage(msg, assfartType);
-        } else {
+    if (msg_contains(msg,"assfart")) {
+        if (controlTalkedRecently(msg, assfartType)) {
             msg.channel.send(`Shut up ${msg.author}, its Ausfahrt!`);
-            setTimeout(() => {
-              talkedRecently.delete(msg.channel.id + assfartType);
-            }, 60000);
         }
     }
 
-    // "msg_starts(msg, text)" is a shorter version of "msg.content.toLowerCase().startsWith(text)"
     if (msg_starts(msg,"!when")) {
         msg.channel.send(`${getBizaamEmoji()} Next Galacon is from august 1st to august 2nd 2020! Hype!!!`)
         let now = Date.now();
@@ -138,51 +126,22 @@ client.on('message', msg => {
         msg.channel.send(`${days} days, ${hrs} hours, ${minutes} minutes and ${Math.floor(seconds)} seconds left! IT TAKES FOREVERHHH`);
     }
 
-
     if (msg_contains(msg, ' is best pony')) {
         if (msg_contains(msg, 'who is best pony')) {
-            if (talkedRecently.has(msg.channel.id + bestPonyType)) {
-                sendCooldownMessage(msg, bestPonyType);
-            } else {
+            if (controlTalkedRecently(msg, bestPonyType)) {
                 msg.channel.send(msg.author + ` ${getBizaamEmoji()} I am, of course!`);
-
-                talkedRecently.add(msg.channel.id + bestPonyType);
-                setTimeout(() => {
-                  talkedRecently.delete(msg.channel.id + bestPonyType);
-                }, 60000);
             }
         } else if (msg_contains(msg, 'canni is best pony') || msg_contains(msg, 'canni soda is best pony')) {
-            if (talkedRecently.has(msg.channel.id + canniBestPonyType)) {
-                sendCooldownMessage(msg, canniBestPonyType);
-            } else {
+            if (controlTalkedRecently(msg, canniBestPonyType)) {
                 msg.channel.send(msg.author + ` I sure am!`);
-
-                talkedRecently.add(msg.channel.id + canniBestPonyType);
-                setTimeout(() => {
-                  talkedRecently.delete(msg.channel.id + canniBestPonyType);
-                }, 60000);
             }
         } else if (msg_contains(msg, 'bizaam is best pony')) {
-            if (talkedRecently.has(msg.channel.id + bizaamBestPonyType)) {
-                // Don't send CD message here. It's not required.
-            } else {
+            if (controlTalkedRecently(msg, bizaamBestPonyType, false)) { // Don't send CD message here. It's not required.
                 msg.channel.send(msg.author + ` Bizaam isn't a pony, silly...`);
-
-                talkedRecently.add(msg.channel.id + bizaamBestPonyType);
-                setTimeout(() => {
-                  talkedRecently.delete(msg.channel.id + bizaamBestPonyType);
-                }, 60000);
             }
         } else {
-            if (talkedRecently.has(msg.channel.id + interjectType)) {
-                // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
-            } else {
+            if (controlTalkedRecently(msg, bizaamBestPonyType, interjectType, false)) { // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
                 msg.channel.send(msg.author + ` Nu-uh. I am best pony!`);
-
-                talkedRecently.add(msg.channel.id + interjectType);
-                setTimeout(() => {
-                  talkedRecently.delete(msg.channel.id + interjectType);
-                }, 60000);
             }
         }
     }
@@ -206,6 +165,22 @@ function sendCooldownMessage(msg, type) {
         setTimeout(() => {
             channelMessaged.delete(msg.channel.id + type);
         }, 60000);
+    }
+}
+
+// "controlTalkedRecently" simplifies the antispam check.   Sends the cooldown message as default.      Retruns true when message can be send.
+function controlTalkedRecently(msg, type, cooldownmessage = true, cooldowntime = 60000) {
+    if (talkedRecently.has(msg.channel.id + type)) {
+        if (cooldownmessage) {
+            sendCooldownMessage(msg, type);
+        }
+        return false;
+    } else {
+        talkedRecently.add(msg.channel.id + type);
+                setTimeout(() => {
+                  talkedRecently.delete(msg.channel.id + type);
+                }, cooldowntime);
+        return true;
     }
 }
 
@@ -255,6 +230,7 @@ function getVideoList()
     });
 }
 */
+
 
 // "msg_contains(msg, text)" is a shorter version of "msg.content.toLowerCase().includes(text)"
 function msg_contains(msg, text) {
