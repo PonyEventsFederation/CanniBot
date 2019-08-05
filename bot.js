@@ -168,7 +168,7 @@ function sendCooldownMessage(msg, type) {
     }
 }
 
-// "controlTalkedRecently" simplifies the antispam check.   Sends the cooldown message as default.      Retruns true when message can be send.
+// "controlTalkedRecently" simplifies the antispam check. Sends the cooldown message as default. Retruns true when message can be send.
 function controlTalkedRecently(msg, type, cooldownmessage = true, cooldowntime = 60000) {
     if (talkedRecently.has(msg.channel.id + type)) {
         if (cooldownmessage) {
