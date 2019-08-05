@@ -203,9 +203,9 @@ function getHugEmoji()
 function msg_contains(msg, text)
 {
     if(msg.content.toLowerCase().includes(text)) {
-        return True;
+        return true;
     } else {
-        return False;
+        return false;
     }
 }
 
@@ -213,9 +213,9 @@ function msg_contains(msg, text)
 function msg_starts(msg, text)
 {
     if(msg.content.toLowerCase().startsWith(text)) {
-        return True;
+        return true;
     } else {
-        return False;
+        return false;
     }
 }
 
