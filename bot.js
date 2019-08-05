@@ -51,8 +51,8 @@ client.on('message', msg => {
             {
                 msg.channel.send("( ͡° ͜ʖ (\\  *BOOPS* " + '<@' + users[i].id + ">");
             }
+            msg.delete(0);//make sure the bot gets manage text permissions , otherwise it will fail silently
         }
-        msg.delete(0);//make sure the bot gets manage text permissions , otherwise it will fail silently
     }
     //i noticed there was a lot of interest in becomming a memer, sooo i thought lets automate!
     //the bot will need to have the rights to give/take meme rolls
