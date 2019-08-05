@@ -1,4 +1,4 @@
-const request = require('request');
+//const request = require('request');
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -218,7 +218,7 @@ function getHugEmoji()
     }
     return hugEmoji;
 }
-
+/*
 function GetChannelUploadID(channelName = "CanniSoda")
 {
     request('https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=${channelName}&key=${auth.youtube}', function (error, response, body) {
@@ -244,8 +244,8 @@ function getVideoList()
         return videoData;
     });
 }
+*/
 
-client.login(auth.token);
 // "msg_contains(msg, text)" is a shorter version of "msg.content.toLowerCase().includes(text)"
 function msg_contains(msg, text)
 {
