@@ -1,4 +1,4 @@
-//const request = require('request');
+const http = require('http');
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -229,20 +229,26 @@ function getHugEmoji() {
     return hugEmoji;
 }
 
-/*
 function GetChannelUploadID(channelName = "CanniSoda")
 {
-    request('https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=${channelName}&key=${auth.youtube}', function (error, response, body) {
-        if(response.statusCode !== 200) {
-            console.log("Received error ${response.statusCode} with message \"${body.error.message}\"");
+    http.get('https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=${channelName}&key=${auth.youtube}', (res) => {
+        if(res !== 200) {
+            console.log("Received error ${res} with message \"${body.error.message}\"");
+            res.resume(); // Clear response data to free up memory
             return null;
         }
+        res.setEncoding('utf8');
+        let rawData = '';
+        res.on('data', (chunk) => {rawData += chunk;});
+        res.on('end', () => {
+            let data = JSON.parse(rawData);
+            return data.items[0].contentDetails.relatedPlaylists.uploads;
+        });
     });
-    console.log("Received id ${body.items[0].contentDetails.relatedPlaylists.uploads}");
-    return body.items[0].contentDetails.relatedPlaylists.uploads;
+    return null;
 }
 
-function getVideoList()
+/*function getVideoList()
 {
     if(channelUploadID === null)
         return {};
@@ -254,8 +260,7 @@ function getVideoList()
         let videoData = JSON.parse(body);
         return videoData;
     });
-}
-*/
+}*/
 
 // "msg_contains(msg, text)" is a shorter version of "msg.content.toLowerCase().includes(text)"
 function msg_contains(msg, text) {
