@@ -57,13 +57,14 @@ client.on('message', msg => {
     //i noticed there was a lot of interest in becomming a memer, sooo i thought lets automate!
     //the bot will need to have the rights to give/take meme rolls
     if (msg_contains(msg, 'i want to be a meme master')) {
-        if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
-            let memeroll = msg.guild.roles.find(role => role.name === "Meme");
-            if(msg.member.roles.some(r=>["Meme"].includes(r.name))) {
-                msg.channel.send(`${msg.author} your already well on your way to become a Meme Master`);
-            }
-            else {
-                msg.channel.send(`${msg.author}
+        try {
+            if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
+                let memeroll = msg.guild.roles.find(role => role.name === "Meme");
+                if (msg.member.roles.some(r => ["Meme"].includes(r.name))) {
+                    msg.channel.send(`${msg.author} your already well on your way to become a Meme Master`);
+                }
+                else {
+                    msg.channel.send(`${msg.author}
                 so you want to be a Meme Master huh?
                 You better know there are hidden dangers waiting for you there
                 And there is not much i can do to help you...
@@ -72,26 +73,33 @@ client.on('message', msg => {
                 If you really want to be a Meme Master, mention me with "i REALLY want to be a Meme Master
                 and i will try to find a way to let you in!
                 this message will selfdestruct in 10 seconds`).then(message => message.delete(15000));
-                msg.delete(10);
+                    msg.delete(10);
+                }
             }
+        }catch (e) {
+            msg.channel.send(`${msg.author} Sorry, something went wrong with my circuits`)
         }
     }
     if (msg_contains(msg, 'i really want to be a meme master')) {// create stuff to automaticly become a memer
-        if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
-            let memeroll = msg.guild.roles.find(role => role.name === "Meme");
-            if(msg.member.roles.some(r=>["Meme"].includes(r.name))) {
-                msg.channel.send(`${msg.author} your already well on your way to become a Meme Master`);
-            }
-            else {
-                msg.channel.send(`${msg.author} You have sealed your destiny!
+        try {
+            if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
+                let memeroll = msg.guild.roles.find(role => role.name === "Meme");
+                if (msg.member.roles.some(r => ["Meme"].includes(r.name))) {
+                    msg.channel.send(`${msg.author} your already well on your way to become a Meme Master`);
+                }
+                else {
+                    msg.channel.send(`${msg.author} You have sealed your destiny!
                 I will use my special powers to open the gateway between here and the memes.
                 Behold the horrors, greater then what lives in the Everfree forest...
                 BEHOLD! Bronies in the wild!!!
                 ${getBizaamEmoji()} BIIZAAAAAMM!!!
                 This message will selfdestruct in 10 seconds`).then(message => message.delete(15000));
-                msg.member.addRole(memeroll).catch(console.error);
-                msg.delete(10);
+                    msg.member.addRole(memeroll).catch(console.error);
+                    msg.delete(10);
+                }
             }
+        }catch (e) {
+            msg.channel.send(`${msg.author} Sorry, something went wrong with my circuits`)
         }
     }
 
