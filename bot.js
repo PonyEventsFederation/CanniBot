@@ -148,7 +148,7 @@ client.on('message', msg => {
                 msg.channel.send(msg.author + ` Bizaam isn't a pony, silly...`);
             }
         } else {
-            if (controlTalkedRecently(msg, bizaamBestPonyType, interjectType, false)) { // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
+            if (controlTalkedRecently(msg, interjectType, false)) { // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
                 msg.channel.send(msg.author + ` Nu-uh. I am best pony!`);
             }
         }
