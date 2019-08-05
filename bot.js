@@ -105,7 +105,7 @@ client.on('message', msg => {
     }
 
 
-    if (msg_contains(msg, "bizaam") && (!msg_contains(msg, 'bizaam is best pony') && !msg_contains(msg, `${getBizaamEmoji()} is best pony`))) {
+    if (msg_contains(msg, "bizaam") && (!msg_contains(msg, 'is best pony'))) {
         if (controlTalkedRecently(msg, bizaamType)) {
             msg.channel.send(`${getBizaamEmoji()} BIIZAAAAAMM!!!`).then(sentEmbed => {
                 sentEmbed.react(getBizaamEmoji())
