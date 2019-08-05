@@ -12,9 +12,9 @@ const canniBestPonyType = 'canni-best-pony';
 const bizaamBestPonyType = 'bizaam-best-pony';
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
-//const channelUploadID = GetChannelUploadID();
-
 const auth = require('./auth.json');
+
+var channelUploadID = GetChannelUploadID();
 
 var messaged = false;
 var bizaamEmoji = null;
@@ -193,9 +193,6 @@ client.on('message', msg => {
             msg.channel.send(`Hey <@${user.id}>! ${msg.author} hugged you ${getHugEmoji()}`)
         }
     }
-    if (msg_starts(msg, "youtube")) {
-        msg.channel.send(`Found token "${GetChannelUploadID()}" for CanniSoda upload list"`);
-    }
 });
 
 function sendCooldownMessage(msg, type) {
@@ -234,36 +231,47 @@ function getHugEmoji() {
 
 function GetChannelUploadID(channelName = "CanniSoda")
 {
-    https.get('https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=${channelName}&key=${auth.youtube}', (res) => {
+    let data = undefined;
+    let properties = new Object();
+    properties.defaultPort = 443;
+    properties.host = "www.googleapis.com";
+    properties.method = "GET";
+    properties.path = `/youtube/v3/channels?part=contentDetails&forUsername=${channelName}&key=${auth.youtube}`;
+    properties.protocol = "https:"
+    https.get(properties, (res) => {
         res.setEncoding('utf8');
         let rawData = '';
         res.on('data', (chunk) => {rawData += chunk;});
         res.on('end', () => {
-            let data = JSON.parse(rawData);
-            if(res !== 200) {
-                console.log("Received error ${res} with message \"${data.error.message}\"");
-                res.resume(); // Clear response data to free up memory
-                return null;
+            let videoData = JSON.parse(rawData);
+            if(res.statusCode !== 200) {
+                console.log(`Received error ${res.statusCode}, reason \"${data.error.errors[0].reason}\" and message \"${data.error.errors[0].message}\"`);
             }
-            res.resume();
-            return data.items[0].contentDetails.relatedPlaylists.uploads;
+            else {
+                channelUploadID = videoData.items[0].contentDetails.relatedPlaylists.uploads;
+            }
         });
     });
-    return null;
 }
 
 /*function getVideoList()
 {
     if(channelUploadID === null)
         return {};
-    request('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${channelUploadID}&key=${auth.youtube}', function (error, response, body) {
-        if(response.statusCode !== 200) {
-            console.log("Received error ${response.statusCode} with message \"${body.error.message}\"");
-            return {};
-        }
-        let videoData = JSON.parse(body);
-        return videoData;
+    https.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${channelUploadID}&key=${auth.youtube}', (res) => {
+        res.setEncoding('utf8');
+        let rawData = '';
+        res.on('data', (chunk) => {rawData += chunk;});
+        res.on('end', () => {
+            let data = JSON.parse(rawData);
+            if(res.statusCode !== 200) {
+                console.log(`Received error ${res.statusCode} with message \"${data.error.message}\"`);
+                return {};
+            }
+            return data;
+        });
     });
+    return {};
 }*/
 
 // "msg_contains(msg, text)" is a shorter version of "msg.content.toLowerCase().includes(text)"
