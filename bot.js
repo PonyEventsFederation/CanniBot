@@ -151,7 +151,7 @@ client.on('message', msg => {
                   talkedRecently.delete(msg.channel.id + bestPonyType);
                 }, 60000);
             }
-        } else if (msg_contains(msg, 'canni is best pony')) {
+        } else if (msg_contains(msg, 'canni is best pony') || msg_contains(msg, 'canni soda is best pony')) {
             if (talkedRecently.has(msg.channel.id + canniBestPonyType)) {
                 sendCooldownMessage(msg, canniBestPonyType);
             } else {
