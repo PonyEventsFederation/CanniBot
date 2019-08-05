@@ -11,7 +11,7 @@ const interjectType = 'interject';
 const canniBestPonyType = 'canni-best-pony';
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
-const channelUploadID = GetChannelUploadID();
+//const channelUploadID = GetChannelUploadID();
 
 const auth = require('./auth.json');
 
