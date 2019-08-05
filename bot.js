@@ -94,15 +94,17 @@ client.on('message', msg => {
         }
     }
     //end of meme master control software
-    
-    
+
+
     // "msg_contains(msg, text)" is a shorter version of "msg.content.toLowerCase().includes(text)"
-    if(msg_contains(msg, "bizaam"))
-    {
+    if (msg_contains(msg, "bizaam")) {
         if (talkedRecently.has(msg.channel.id + bizaamType)) {
             sendCooldownMessage(msg, bizaamType);
         } else {
-            msg.channel.send(`${getBizaamEmoji()} BIIZAAAAAMM!!!`);
+            msg.channel.send(`${getBizaamEmoji()} BIIZAAAAAMM!!!`).then(sentEmbed => {
+                sentEmbed.react(getBizaamEmoji())
+            });
+
             msg.react(getBizaamEmoji());
             talkedRecently.add(msg.channel.id + bizaamType);
             setTimeout(() => {
