@@ -11,6 +11,7 @@ const interjectType = 'interject';
 const canniBestPonyType = 'canni-best-pony';
 const bizaamBestPonyType = 'bizaam-best-pony';
 const assFartBestPonyType = 'assfart-best-pony';
+const canniworstPonyType = 'canny-worst-pony';
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
 //const channelUploadID = GetChannelUploadID();
@@ -159,6 +160,14 @@ client.on('message', msg => {
         }
     }
 
+    if (msg_contains(msg, ' is worst pony')) {
+        if (msg_contains(msg, 'canni is worst pony') || msg_contains(msg, 'canni soda is worst pony')) {
+            if (controlTalkedRecently(msg, canniworstPonyType)) {
+                msg.channel.send(msg.author + ` Why are you so mean to me?`);
+            }
+        }
+    }
+
     if (msg_starts(msg,"hug")) {
         if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let user = msg.mentions.users.array()[0];
@@ -171,10 +180,16 @@ client.on('message', msg => {
 });
 
 function sendCooldownMessage(msg, type) {
+    if (type == canniworstPonyType) {
+        var cooldownMessage = `${msg.author} Fine, I'm not talking to you anymore for a while.`;
+    } else {
+        var cooldownMessage = `Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment!`;
+    }
+
     if (channelMessaged.has(msg.channel.id + type)) {
         // Do nothing. We don't want to spam everyone all the time.
     } else {
-        msg.channel.send(`Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment!`)
+        msg.channel.send(cooldownMessage)
 
         messaged = true;
         channelMessaged.add(msg.channel.id + type);
