@@ -26,6 +26,7 @@ var messaged = false;
 var bizaamEmoji = null;
 var hugEmoji = null;
 var loveEmoji = null;
+var errorEmoji = null;
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -213,7 +214,7 @@ function sendCooldownMessage(msg, type, cooldownTarget) {
         cooldownTarget = msg.author.id;
         blockUser(msg, 300000);
     } else {
-        var cooldownMessage = `Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment!`;
+        var cooldownMessage = `Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment! ${getErrorEmoji()}`;
     }
 
     if (channelMessaged.has(cooldownTarget)) {
@@ -296,6 +297,17 @@ function getLoveEmoji() {
     }
 
     return loveEmoji;
+}
+
+function getErrorEmoji() {
+    if (errorEmoji === null) {
+        errorEmoji = client.emojis.find(emoji => emoji.name === "error");
+        if(errorEmoji === null) {// added little code for when the bot is running ouside of galacon server
+            errorEmoji = "😫";
+        }
+    }
+
+    return errorEmoji;
 }
 
 async function updateChannel() {
