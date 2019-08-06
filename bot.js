@@ -190,7 +190,6 @@ function sendCooldownMessage(msg, type) {
     if (type == canniworstPonyType) {
         var cooldownMessage = `${msg.author} Fine, I'm not talking to you anymore for a while.`;
         blockUser(msg, 300000);
-
     } else {
         var cooldownMessage = `Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment!`;
     }
