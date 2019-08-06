@@ -24,6 +24,7 @@ const auth = require('./auth.json');
 var channelUploadID = undefined;
 var channelUploadList = undefined;
 
+var data = require('./data.json');
 var messaged = false;
 var bizaamEmoji = null;
 var hugEmoji = null;
@@ -63,7 +64,7 @@ client.on('message', msg => {
     if (msg.isMemberMentioned(client.user)) {
         if (msg_contains(msg, 'i\'m sorry') || msg_contains(msg, 'i am sorry')) {
             if (userBlocked.has(msg.author.id)) {
-                msg.channel.send(`${msg.author} ${getLoveEmoji()} Oh all right. I forgive you.`);
+                msg.channel.send(dparse("ans_forgive", [msg.author, getLoveEmoji()]));
                 if (talkedRecently.has(msg.author.id)) {
                     talkedRecently.delete(msg.author.id);
                 }
@@ -77,7 +78,7 @@ client.on('message', msg => {
         }
         if (msg_contains(msg, 'i love you')) {
             if (controlTalkedRecently(msg, loveCanniType)) {
-                msg.channel.send(`${msg.author} I love you too! ${getLoveEmoji()}`);
+                msg.channel.send(dparse("ans_love",[msg.author,getLoveEmoji()]));
                 messageSent = true;
             }
             return;
@@ -93,7 +94,7 @@ client.on('message', msg => {
             let users = msg.mentions.users.array();
             for(let i = 0; i < users.length; i++)
             {
-                msg.channel.send(msg.author + " ( ͡° ͜ʖ (\\  *BOOPS* " + '<@' + users[i].id + ">");
+                msg.channel.send(dparse("ans_boop", [msg.author, users[i].id]));  // not sure how to implement mention in json
                 messageSent = true;
             }
             msg.delete(0);//make sure the bot gets manage text permissions , otherwise it will fail silently-Merte
@@ -102,34 +103,8 @@ client.on('message', msg => {
 
     if (msg_contains_word(msg, "fanta")) {//Fanta jokes! -merte
         if (controlTalkedRecently(msg, fantaType)) {
-            let rndm = randomIntFromInterval(1, 8);
-            switch (rndm) {
-                case 1:
-                    msg.channel.send(`There's no wrong way to Fanta size`);
-                break;
-                case 2:
-                    msg.channel.send(`Is this real life, is this just Fanta sea?`);
-                break;
-                case 3:
-                    msg.channel.send(`I had a dream I was drowning in an ocean of orange soda\nThank god it was only a Fanta sea`);
-                break;
-                case 4:
-                    msg.channel.send(`When I drink alcohol people call me an alcoholic but when I drink Fanta...\nNobody calls me or texts me guys I'm lonely`);
-                break;
-                case 5:
-                    msg.channel.send(`Soaking a twig in coke is nice, but soaking a twig in fanta...\nFanta stick.`);
-                break;
-                case 6:
-                    msg.channel.send(`Whats so funny about fanta`);
-                break;
-                case 7:
-                    msg.channel.send(`fanta is Cannibot fuel`);
-                break;
-                case 8:
-                    msg.channel.send(`Perry doesn't like Fanta jokes...`);
-                break;
-                
-            }
+            let rndm = randomIntFromInterval(0, data["ans_fanta_list"].length-1);
+            msg.channel.send(parse(data["ans_fanta_list"][rndm]));
             messageSent = true;
         }
     }
@@ -140,25 +115,17 @@ client.on('message', msg => {
             if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
                 let memeroll = msg.guild.roles.find(role => role.name === "Meme");
                 if (msg.member.roles.some(r => ["Meme"].includes(r.name))) {
-                    msg.channel.send(`${msg.author} You're already well on the way to become a Meme Master`);
+                    msg.channel.send(dparse("ans_meme_already", [msg.author]));
                 }
                 else {
-                    msg.channel.send(`${msg.author}
-                so you want to be a Meme Master huh?
-                You better know there are hidden dangers waiting for you there
-                And there is not much i can do to help you...
-                Neither can the rest of the support crew
-                ARRRG there be pirates ahead!
-                If you really want to be a Meme Master, mention me with "i REALLY want to be a Meme Master
-                and i will try to find a way to let you in!
-                this message will selfdestruct in 10 seconds`).then(message => message.delete(15000));
+                    msg.channel.send(dparse("ans_meme1", [msg.author])).then(message => message.delete(15000));
                     msg.delete(10);
 
                 }
             }
             messageSent = true;
         }catch (e) {
-            msg.channel.send(`${msg.author} Sorry, something went wrong with my circuits`)
+            msg.channel.send(dparse("ans_meme_error",[msg.author]))
         }
     }
     if (msg_contains(msg, 'i really want to be a meme master')) {// create stuff to automaticly become a memer
@@ -166,29 +133,24 @@ client.on('message', msg => {
             if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
                 let memeroll = msg.guild.roles.find(role => role.name === "Meme");
                 if (msg.member.roles.some(r => ["Meme"].includes(r.name))) {
-                    msg.channel.send(`${msg.author} You're already well on the way to become a Meme Master`);
+                    msg.channel.send(dparse("ans_meme_already", [msg.author]));
                 }
                 else {
-                    msg.channel.send(`${msg.author} You have sealed your destiny!
-                I will use my special powers to open the gateway between here and the memes.
-                Behold the horrors, greater then what lives in the Everfree forest...
-                BEHOLD! Bronies in the wild!!!
-                ${getBizaamEmoji()} BIIZAAAAAMM!!!
-                This message will selfdestruct in 10 seconds`).then(message => message.delete(15000));
+                    msg.channel.send(dparse("ans_meme1", [msg.author,getBizaamEmoji()])).then(message => message.delete(15000));
                     msg.member.addRole(memeroll).catch(console.error);
                     msg.delete(10);
                 }
                 messageSent = true;
             }
         }catch (e) {
-            msg.channel.send(`${msg.author} Sorry, something went wrong with my circuits`)
+            msg.channel.send(dparse("ans_meme_error",[msg.author]))
         }
     }
 
 
     if (msg_contains(msg, "bizaam") && (!msg_contains(msg, 'is best pony'))) {
         if (controlTalkedRecently(msg, bizaamType)) {
-            msg.channel.send(`${getBizaamEmoji()} BIIZAAAAAMM!!!`).then(sentEmbed => {
+            msg.channel.send(dparse("ans_bizaam",[getBizaamEmoji()])).then(sentEmbed => {
                 sentEmbed.react(getBizaamEmoji())
             });
 
@@ -199,13 +161,13 @@ client.on('message', msg => {
 
     if (msg_contains(msg, "assfart") && !msg_contains(msg, 'assfart is best pony')) {
         if (controlTalkedRecently(msg, assfartType)) {
-            msg.channel.send(`Shut up ${msg.author}, its Ausfahrt!`);
+            msg.channel.send(dparse("ans_assfart",[msg.author]));
             messageSent = true;
         }
     }
 
     if (msg_starts(msg,"!when")) {
-        msg.channel.send(`${getBizaamEmoji()} Next Galacon is from august 1st to august 2nd 2020! Hype!!!`)
+        msg.channel.send(dparse("ans_next_gala1",[getBizaamEmoji()]));
         let now = Date.now();
         let diff =  galaconDate - now;
         var seconds = parseInt(diff) / 1000;
@@ -215,34 +177,34 @@ client.on('message', msg => {
         seconds -= hrs * 3600;
         let minutes = Math.floor(seconds / 60);
         seconds -= minutes * 60;
-        msg.channel.send(`${days} days, ${hrs} hours, ${minutes} minutes and ${Math.floor(seconds)} seconds left! IT TAKES FOREVERHHH`);
+        msg.channel.send(dparse("ans_next_gala2",[days,hrs,minutes,Math.floor(seconds)]));
         messageSent = true;
     }
 
     if (msg_contains(msg, ' is best pony')) {
         if (msg_contains(msg, 'who is best pony')) {
             if (controlTalkedRecently(msg, bestPonyType)) {
-                msg.channel.send(msg.author + ` ${getBizaamEmoji()} I am, of course!`);
+                msg.channel.send(dparse("ans_best_pony1",[msg.author,getBizaamEmoji()]));
                 messageSent = true;
             }
         } else if (msg_contains(msg, 'canni is best pony') || msg_contains(msg, 'canni soda is best pony')) {
             if (controlTalkedRecently(msg, canniBestPonyType)) {
-                msg.channel.send(msg.author + ` I sure am!`);
+                msg.channel.send(dparse("ans_best_pony2",[msg.author]));
                 messageSent = true;
             }
         } else if (msg_contains(msg, 'bizaam is best pony') || msg_contains(msg, `${getBizaamEmoji()} is best pony`)) {
             if (controlTalkedRecently(msg, bizaamBestPonyType, false)) { // Don't send CD message here. It's not required.
-                msg.channel.send(msg.author + ` A bizaam isn't a pony, silly...`);
+                msg.channel.send(dparse("ans_best_pony3",[msg.author]));
                 messageSent = true;
             }
         } else if (msg_contains(msg, 'assfart is best pony')) {
             if (controlTalkedRecently(msg, assFartBestPonyType, false)) { // Don't send CD message here. It's not required.
-                msg.channel.send(msg.author + ` Rude!`);
+                msg.channel.send(dparse("ans_best_pony4",[msg.author]));
                 messageSent = true;
             }
         }else {
             if (controlTalkedRecently(msg, interjectType, false)) { // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
-                msg.channel.send(msg.author + ` Nu-uh. I am best pony!`);
+                msg.channel.send(dparse("ans_best_pony5",[msg.author]));
                 messageSent = true;
             }
         }
@@ -252,7 +214,7 @@ client.on('message', msg => {
     if (msg_contains(msg, ' is worst pony')) {
         if (msg_contains(msg, 'canni is worst pony') || msg_contains(msg, 'canni soda is worst pony')) {
             if (controlTalkedRecently(msg, canniworstPonyType, true, 60000, 'individual')) {
-                msg.channel.send(msg.author + ` Why are you so mean to me?`);
+                msg.channel.send(dparse("ans_worst_pony1",[msg.author]));
                 messageSent = true;
             }
 
@@ -263,7 +225,7 @@ client.on('message', msg => {
         if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let user = msg.mentions.users.array()[0];
             if (!userBlocked.has(user.id)) {
-                msg.channel.send(`Hey <@${user.id}>! ${msg.author} hugged you ${getHugEmoji()}`)
+                msg.channel.send(dparse("ans_hug",[user.id,msg.author,getHugEmoji()])); // not sure how to implement mention in json
                 msg.delete(0);
                 messageSent = true;
             }
@@ -271,7 +233,7 @@ client.on('message', msg => {
     }
     if(!messageSent){
         if(msg.isMemberMentioned(client.user)){
-            msg.channel.send(`I'm sorry, I don't understand what you're saying, I'm still learning ${getShyEmoji()}`);
+            msg.channel.send(dparse("ans_still_learning",[getShyEmoji()]));
         }else{
             let rnd = randomIntFromInterval(0, 200);
             if(rnd === 10){
@@ -283,15 +245,15 @@ client.on('message', msg => {
 function sendCooldownMessage(msg, type, cooldownTarget) {
     switch (type) {
         case canniworstPonyType:
-            var cooldownMessage = `${msg.author} Fine, I'm not talking to you anymore for a while.`;
+            var cooldownMessage = dparse("ans_cooldown_worst",[msg.author]);
             cooldownTarget = msg.author.id;
             blockUser(msg, 300000);
             break;
         case loveCanniType:
-            var cooldownMessage = `I cannot handle this much love! ${getErrorEmoji()}`;
+            var cooldownMessage = dparse("ans_cooldown_love",[msg.getErrorEmoji()]);
             break;
         default:
-            var cooldownMessage = `Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment! ${getErrorEmoji()}`;
+            var cooldownMessage = dparse("ans_cooldown_default",[msg.author,msg.getErrorEmoji()]);
     }
 
     if (channelMessaged.has(cooldownTarget)) {
@@ -494,6 +456,21 @@ function msg_contains_word(msg, word)
             return true;
     }
     return false;
+}
+
+
+//parses variables into strings from data. After string argument a list element with the variables is required.
+function dparse(str) {
+    var raw = data[str];
+    var args = [].slice.call(arguments, 1), i = 0;
+    try {return raw.replace(/%s/g, () => args[0][i++])}
+    catch {return raw.replace(/%s/g, () => args[i++])}
+}
+
+function parse(str) {
+    var args = [].slice.call(arguments, 1), i = 0;
+    try {return str.replace(/%s/g, () => args[0][i++])}
+    catch {return str.replace(/%s/g, () => args[i++])}
 }
 
 client.login(auth.token);
