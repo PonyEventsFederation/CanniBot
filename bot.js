@@ -4,6 +4,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const talkedRecently = new Set();
 const channelMessaged = new Set();
+const userBlocked = new Set();
 const bizaamType = 'bizaam';
 const bestPonyType = 'best-pony';
 const assfartType = 'assfart';
@@ -44,8 +45,14 @@ client.on('ready', () => {
 
 client.on('message', msg => {
 
-    if(msg.author.bot)
+    if (msg.author.bot) {
         return;
+    }
+
+    if (userBlocked.has(msg.author.id)) {
+        return;
+    }
+
     if (msg_starts(msg,'boop')) {
         if(msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let users = msg.mentions.users.array();
@@ -182,6 +189,8 @@ client.on('message', msg => {
 function sendCooldownMessage(msg, type) {
     if (type == canniworstPonyType) {
         var cooldownMessage = `${msg.author} Fine, I'm not talking to you anymore for a while.`;
+        blockUser(msg, 300000);
+
     } else {
         var cooldownMessage = `Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment!`;
     }
@@ -213,6 +222,14 @@ function controlTalkedRecently(msg, type, cooldownmessage = true, cooldowntime =
                 }, cooldowntime);
         return true;
     }
+}
+
+// Temporarily block a user after they've been mean to Canni.
+function blockUser(msg, timeout) {
+    userBlocked.add(msg.author.id);
+    setTimeout(() => {
+        userBlocked.delete(msg.author.id);
+    }, timeout);
 }
 
 function getBizaamEmoji() {
