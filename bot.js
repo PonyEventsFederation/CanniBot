@@ -1,4 +1,4 @@
-const https = require('https');
+const rp = require('request-promise');
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -16,7 +16,6 @@ const auth = require('./auth.json');
 
 var channelUploadID = undefined;
 var channelUploadList = undefined;
-updateChannel();
 
 var messaged = false;
 var bizaamEmoji = null;
@@ -40,6 +39,9 @@ client.on('ready', () => {
             client.user.setActivity(`Time to Galacon: ${days} days, ${hrs}:${minutes} left! Hype!`, { type: 'PLAYING' });
         }
     }, 10000); // Every 10s?
+    setInterval(() => {
+        updateChannel();
+    });
 });
 
 client.on('message', msg => {
@@ -214,94 +216,67 @@ function getHugEmoji() {
     return hugEmoji;
 }
 
-function updateChannel() {
-    let ret;
-    asyncChannelCall(getChannelUploadID).then(ret => {
-        channelUploadID = ret;
-    }).then(() => {
-        channelUploadList = [];
-        asyncChannelCall(getChannelUploadList).then(ret => {
-            channelUploadList.push(ret.items);
-        });
-    });
+async function updateChannel() {
+    channelUploadList = [];
+    let token = "";
+    while(token !== undefined) {
+        const uploads = await getChannelUploadList(token);
+        if(!uploads) {
+            break;
+        }
+        for(let i = 0; i < uploads.body.items.length; i++)
+        channelUploadList.push(uploads.body.items[i]);
+        token = uploads.body.nextPageToken;
+    }
 }
 
-async function asyncChannelCall(functionCall, argument = "") {
+async function getChannelUploadID(channelName = "CanniSoda")
+{
+    let options = {
+        uri: "https://www.googleapis.com/youtube/v3/channels",
+        qs: {
+            part:           "contentDetails",
+            forUsername:    channelName,
+            key:            auth.youtube
+        },
+        resolveWithFullResponse:    true,
+        json:   true
+    }
     try {
-        let response;
-        if(argument !== "")
-            response = await functionCall(argument);
-        else
-            response = await functionCall();
-        console.log(`Returning ${response}`);
-        return response;
+        let response = await rp(options);
+        return Promise.resolve(response);
     }
-    catch(error) {
-        console.log(error);
+    catch (error) {
+        return Promise.reject(error)
     }
 }
 
-function getChannelUploadID(channelName = "CanniSoda")
+async function getChannelUploadList(pageToken = "")
 {
-    return new Promise((resolve, reject) => {
-        let properties = new Object();
-        properties.defaultPort = 443;
-        properties.host = "www.googleapis.com";
-        properties.method = "GET";
-        properties.path = `/youtube/v3/channels?part=contentDetails&forUsername=${channelName}&key=${auth.youtube}`;
-        properties.protocol = "https:"
-        https.get(properties, (res) => {
-            res.setEncoding('utf8');
-            let rawData = '';
-            res.on('data', (chunk) => {rawData += chunk;});
-            res.on('end', () => {
-                let videoData = JSON.parse(rawData);
-                if(res.statusCode !== 200) {
-                    console.log(`Received error ${res.statusCode}, reason \"${videoData.error.errors[0].reason}\" and message \"${videoData.error.errors[0].message}\"`);
-                    resolve(undefined);
-                }
-                else {
-                    resolve(videoData.items[0].contentDetails.relatedPlaylists.uploads);
-                }
-            });
-            res.on('error', (error) => {
-                reject(error);
-            });
-        });
-    });
-}
-
-function getChannelUploadList(pageToken = "")
-{
-    return new Promise((resolve, reject) => {
-        if(channelUploadID === undefined)
-            resolve(undefined);
-        let properties = new Object()
-        properties.defaultPort = 443;
-        properties.host = "www.googleapis.com";
-        properties.method = "GET";
-        if(pageToken === "") {
-            properties.path = `/youtube/v3/playlistItems?part=snippet&playlistId=${channelUploadID}&key=${auth.youtube}&maxResults=50`;
-        }
-        else {
-            properties.path = `/youtube/v3/playlistItems?part=snippet&playlistId=${channelUploadID}&key=${auth.youtube}&maxResults=50&pageToken=${pageToken}`;
-        }
-        properties.protocol = "https:"
-        https.get(properties, (res) => {
-            res.setEncoding('utf8');
-            let rawData = '';
-            res.on('data', (chunk) => {rawData += chunk;});
-            res.on('end', () => {
-                let data = JSON.parse(rawData);
-                if(res.statusCode !== 200) {
-                    reject(`Received error ${res.statusCode}, reason \"${data.error.errors[0].reason}\" and message \"${data.error.errors[0].message}\"`);
-                }
-                else {
-                    resolve(data);
-                }
-            });
-        });
-    });
+    if(channelUploadID === undefined) {
+        let body = await getChannelUploadID();
+        channelUploadID = body.body.items[0].contentDetails.relatedPlaylists.uploads;
+    }
+    let options = {
+        uri: "https://www.googleapis.com/youtube/v3/playlistItems",
+        qs: {
+            part:           "snippet",
+            playlistId:     channelUploadID,
+            key:            auth.youtube,
+            maxResults:     50
+        },
+        resolveWithFullResponse:    true,
+        json:   true
+    }
+    if(pageToken !== "")
+        options.qs.pageToken = pageToken;
+    try {
+        let response = await rp(options);
+        return Promise.resolve(response);
+    }
+    catch (error) {
+        return Promise.reject(error)
+    }
 }
 
 
