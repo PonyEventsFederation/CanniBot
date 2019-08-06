@@ -70,6 +70,7 @@ client.on('message', msg => {
                     channelMessaged.delete(msg.author.id);
                 }
                 unblockUser(msg);
+                messageSent = true;
             }
         }
      }
