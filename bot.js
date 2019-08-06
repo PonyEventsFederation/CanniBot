@@ -16,6 +16,7 @@ const canniBestPonyType = 'canni-best-pony';
 const bizaamBestPonyType = 'bizaam-best-pony';
 const assFartBestPonyType = 'assfart-best-pony';
 const canniworstPonyType = 'canny-worst-pony';
+const loveCanniType = 'love-canni';
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
 const auth = require('./auth.json');
@@ -72,6 +73,14 @@ client.on('message', msg => {
                 unblockUser(msg);
                 messageSent = true;
             }
+            return;
+        }
+        if (msg_contains(msg, 'i love you')) {
+            if (controlTalkedRecently(msg, loveCanniType)) {
+                msg.channel.send(`${msg.author} I love you too! ${getLoveEmoji()}`);
+                messageSent = true;
+            }
+            return;
         }
      }
 
@@ -272,12 +281,17 @@ client.on('message', msg => {
     }
 });
 function sendCooldownMessage(msg, type, cooldownTarget) {
-    if (type == canniworstPonyType) {
-        var cooldownMessage = `${msg.author} Fine, I'm not talking to you anymore for a while.`;
-        cooldownTarget = msg.author.id;
-        blockUser(msg, 300000);
-    } else {
-        var cooldownMessage = `Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment! ${getErrorEmoji()}`;
+    switch (type) {
+        case canniworstPonyType:
+            var cooldownMessage = `${msg.author} Fine, I'm not talking to you anymore for a while.`;
+            cooldownTarget = msg.author.id;
+            blockUser(msg, 300000);
+            break;
+        case loveCanniType:
+            var cooldownMessage = `I cannot handle this much love! ${getErrorEmoji()}`;
+            break;
+        default:
+            var cooldownMessage = `Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment! ${getErrorEmoji()}`;
     }
 
     if (channelMessaged.has(cooldownTarget)) {
