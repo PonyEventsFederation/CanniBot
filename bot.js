@@ -335,7 +335,7 @@ function getLoveEmoji() {
 
 function getErrorEmoji() {
     if (errorEmoji === null) {
-        errorEmoji = client.emojis.find(emoji => emoji.name === "error");
+        errorEmoji = client.emojis.find(emoji => emoji.name === "Error");
         if(errorEmoji === null) {// added little code for when the bot is running ouside of galacon server
             errorEmoji = "😫";
         }
