@@ -28,6 +28,7 @@ var bizaamEmoji = null;
 var hugEmoji = null;
 var loveEmoji = null;
 var errorEmoji = null;
+var shyEmohi = null;
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -53,8 +54,8 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
-
-    if (msg.author.bot) {
+    var messageSent = false;
+    if(msg.author.bot){
         return;
     }
 
@@ -83,6 +84,7 @@ client.on('message', msg => {
             for(let i = 0; i < users.length; i++)
             {
                 msg.channel.send("( ͡° ͜ʖ (\\  *BOOPS* " + '<@' + users[i].id + ">");
+                messageSent = true;
             }
             msg.delete(0);//make sure the bot gets manage text permissions , otherwise it will fail silently-Merte
         }
@@ -118,6 +120,7 @@ client.on('message', msg => {
                 break;
                 
             }
+            messageSent = true;
         }
     }
     //i noticed there was a lot of interest in becomming a memer, sooo i thought lets automate!-Merte
@@ -140,8 +143,10 @@ client.on('message', msg => {
                 and i will try to find a way to let you in!
                 this message will selfdestruct in 10 seconds`).then(message => message.delete(15000));
                     msg.delete(10);
+
                 }
             }
+            messageSent = true;
         }catch (e) {
             msg.channel.send(`${msg.author} Sorry, something went wrong with my circuits`)
         }
@@ -163,6 +168,7 @@ client.on('message', msg => {
                     msg.member.addRole(memeroll).catch(console.error);
                     msg.delete(10);
                 }
+                messageSent = true;
             }
         }catch (e) {
             msg.channel.send(`${msg.author} Sorry, something went wrong with my circuits`)
@@ -177,12 +183,14 @@ client.on('message', msg => {
             });
 
             msg.react(getBizaamEmoji());
+            messageSent = true;
         }
     }
 
     if (msg_contains(msg, "assfart") && !msg_contains(msg, 'assfart is best pony')) {
         if (controlTalkedRecently(msg, assfartType)) {
             msg.channel.send(`Shut up ${msg.author}, its Ausfahrt!`);
+            messageSent = true;
         }
     }
 
@@ -198,37 +206,46 @@ client.on('message', msg => {
         let minutes = Math.floor(seconds / 60);
         seconds -= minutes * 60;
         msg.channel.send(`${days} days, ${hrs} hours, ${minutes} minutes and ${Math.floor(seconds)} seconds left! IT TAKES FOREVERHHH`);
+        messageSent = true;
     }
 
     if (msg_contains(msg, ' is best pony')) {
         if (msg_contains(msg, 'who is best pony')) {
             if (controlTalkedRecently(msg, bestPonyType)) {
                 msg.channel.send(msg.author + ` ${getBizaamEmoji()} I am, of course!`);
+                messageSent = true;
             }
         } else if (msg_contains(msg, 'canni is best pony') || msg_contains(msg, 'canni soda is best pony')) {
             if (controlTalkedRecently(msg, canniBestPonyType)) {
                 msg.channel.send(msg.author + ` I sure am!`);
+                messageSent = true;
             }
         } else if (msg_contains(msg, 'bizaam is best pony') || msg_contains(msg, `${getBizaamEmoji()} is best pony`)) {
             if (controlTalkedRecently(msg, bizaamBestPonyType, false)) { // Don't send CD message here. It's not required.
                 msg.channel.send(msg.author + ` A bizaam isn't a pony, silly...`);
+                messageSent = true;
             }
         } else if (msg_contains(msg, 'assfart is best pony')) {
             if (controlTalkedRecently(msg, assFartBestPonyType, false)) { // Don't send CD message here. It's not required.
                 msg.channel.send(msg.author + ` Rude!`);
+                messageSent = true;
             }
         }else {
             if (controlTalkedRecently(msg, interjectType, false)) { // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
                 msg.channel.send(msg.author + ` Nu-uh. I am best pony!`);
+                messageSent = true;
             }
         }
+
     }
 
     if (msg_contains(msg, ' is worst pony')) {
         if (msg_contains(msg, 'canni is worst pony') || msg_contains(msg, 'canni soda is worst pony')) {
             if (controlTalkedRecently(msg, canniworstPonyType, true, 60000, 'individual')) {
                 msg.channel.send(msg.author + ` Why are you so mean to me?`);
+                messageSent = true;
             }
+
         }
     }
 
@@ -237,11 +254,22 @@ client.on('message', msg => {
             let user = msg.mentions.users.array()[0];
             if (!userBlocked.has(user.id)) {
                 msg.channel.send(`Hey <@${user.id}>! ${msg.author} hugged you ${getHugEmoji()}`)
+                msg.delete(0);
+                messageSent = true;
+            }
+        }
+    }
+    if(!messageSent){
+        if(msg.isMemberMentioned(client.user)){
+            msg.channel.send(`I'm sorry, I don't understand what you're saying, I'm still learning ${getShyEmoji()}`);
+        }else{
+            let rnd = randomIntFromInterval(0, 200);
+            if(rnd === 10){
+                msg.channel.send(`Boop ${msg.author}! I'm bored!`)
             }
         }
     }
 });
-
 function sendCooldownMessage(msg, type, cooldownTarget) {
     if (type == canniworstPonyType) {
         var cooldownMessage = `${msg.author} Fine, I'm not talking to you anymore for a while.`;
@@ -261,6 +289,7 @@ function sendCooldownMessage(msg, type, cooldownTarget) {
         setTimeout(() => {
             channelMessaged.delete(cooldownTarget);
         }, 60000);
+
     }
 }
 
@@ -320,6 +349,16 @@ function getHugEmoji() {
         }
     }
     return hugEmoji;
+}
+
+function getShyEmoji() {
+    if(shyEmohi === null) {
+        shyEmohi = client.emojis.find(emoji => emoji.name === "Shy");
+        if(shyEmohi === null) {// added little code for when the bot is running ouside of galacon server
+            shyEmohi = "😳";
+        }
+    }
+    return shyEmohi;
 }
 
 function getLoveEmoji() {
