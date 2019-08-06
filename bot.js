@@ -22,6 +22,7 @@ const auth = require('./auth.json');
 var messaged = false;
 var bizaamEmoji = null;
 var hugEmoji = null;
+var loveEmoji = null;
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -48,6 +49,15 @@ client.on('message', msg => {
     if (msg.author.bot) {
         return;
     }
+
+    if (msg.isMemberMentioned(client.user)) {
+        if (msg_contains(msg, 'i\'m sorry') || msg_contains(msg, 'i am sorry')) {
+            if (userBlocked.has(msg.author.id)) {
+                msg.channel.send(`${msg.author} ${getLoveEmoji()} Oh all right. I forgive you.`)
+                unblockUser(msg);
+            }
+        }
+     }
 
     if (userBlocked.has(msg.author.id)) {
         return;
@@ -234,6 +244,11 @@ function blockUser(msg, timeout) {
     }, timeout);
 }
 
+// Manually unblock a user.
+function unblockUser(msg) {
+    userBlocked.delete(msg.author.id);
+}
+
 function getBizaamEmoji() {
     if (bizaamEmoji === null) {
         bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
@@ -248,10 +263,21 @@ function getHugEmoji() {
     if(hugEmoji === null) {
         hugEmoji = client.emojis.find(emoji => emoji.name === "hug");
         if(hugEmoji === null) {// added little code for when the bot is running ouside of galacon server
-                hugEmoji = "🤗";
+            hugEmoji = "🤗";
         }
     }
     return hugEmoji;
+}
+
+function getLoveEmoji() {
+    if (loveEmoji === null) {
+        loveEmoji = client.emojis.find(emoji => emoji.name === "love");
+        if(loveEmoji === null) {// added little code for when the bot is running ouside of galacon server
+            loveEmoji = "🤗";
+        }
+    }
+
+    return loveEmoji;
 }
 
 function GetChannelUploadID(channelName = "CanniSoda")
