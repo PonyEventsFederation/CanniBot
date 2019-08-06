@@ -4,12 +4,15 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const talkedRecently = new Set();
 const channelMessaged = new Set();
+const userBlocked = new Set();
 const bizaamType = 'bizaam';
 const bestPonyType = 'best-pony';
 const assfartType = 'assfart';
 const interjectType = 'interject';
 const canniBestPonyType = 'canni-best-pony';
 const bizaamBestPonyType = 'bizaam-best-pony';
+const assFartBestPonyType = 'assfart-best-pony';
+const canniworstPonyType = 'canny-worst-pony';
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
 const auth = require('./auth.json');
@@ -46,8 +49,14 @@ client.on('ready', () => {
 
 client.on('message', msg => {
 
-    if(msg.author.bot)
+    if (msg.author.bot) {
         return;
+    }
+
+    if (userBlocked.has(msg.author.id)) {
+        return;
+    }
+
     if (msg_starts(msg,'boop')) {
         if(msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let users = msg.mentions.users.array();
@@ -108,7 +117,7 @@ client.on('message', msg => {
     }
 
 
-    if (msg_contains(msg, "bizaam") && !msg_contains(msg, 'bizaam is best pony')) {
+    if (msg_contains(msg, "bizaam") && (!msg_contains(msg, 'is best pony'))) {
         if (controlTalkedRecently(msg, bizaamType)) {
             msg.channel.send(`${getBizaamEmoji()} BIIZAAAAAMM!!!`).then(sentEmbed => {
                 sentEmbed.react(getBizaamEmoji())
@@ -118,7 +127,7 @@ client.on('message', msg => {
         }
     }
 
-    if (msg_contains(msg,"assfart")) {
+    if (msg_contains(msg, "assfart") && !msg_contains(msg, 'assfart is best pony')) {
         if (controlTalkedRecently(msg, assfartType)) {
             msg.channel.send(`Shut up ${msg.author}, its Ausfahrt!`);
         }
@@ -147,13 +156,25 @@ client.on('message', msg => {
             if (controlTalkedRecently(msg, canniBestPonyType)) {
                 msg.channel.send(msg.author + ` I sure am!`);
             }
-        } else if (msg_contains(msg, 'bizaam is best pony')) {
+        } else if (msg_contains(msg, 'bizaam is best pony') || msg_contains(msg, `${getBizaamEmoji()} is best pony`)) {
             if (controlTalkedRecently(msg, bizaamBestPonyType, false)) { // Don't send CD message here. It's not required.
-                msg.channel.send(msg.author + ` Bizaam isn't a pony, silly...`);
+                msg.channel.send(msg.author + ` A bizaam isn't a pony, silly...`);
             }
-        } else {
-            if (controlTalkedRecently(msg, bizaamBestPonyType, interjectType, false)) { // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
+        } else if (msg_contains(msg, 'assfart is best pony')) {
+            if (controlTalkedRecently(msg, assFartBestPonyType, false)) { // Don't send CD message here. It's not required.
+                msg.channel.send(msg.author + ` Rude!`);
+            }
+        }else {
+            if (controlTalkedRecently(msg, interjectType, false)) { // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
                 msg.channel.send(msg.author + ` Nu-uh. I am best pony!`);
+            }
+        }
+    }
+
+    if (msg_contains(msg, ' is worst pony')) {
+        if (msg_contains(msg, 'canni is worst pony') || msg_contains(msg, 'canni soda is worst pony')) {
+            if (controlTalkedRecently(msg, canniworstPonyType)) {
+                msg.channel.send(msg.author + ` Why are you so mean to me?`);
             }
         }
     }
@@ -167,10 +188,17 @@ client.on('message', msg => {
 });
 
 function sendCooldownMessage(msg, type) {
+    if (type == canniworstPonyType) {
+        var cooldownMessage = `${msg.author} Fine, I'm not talking to you anymore for a while.`;
+        blockUser(msg, 300000);
+    } else {
+        var cooldownMessage = `Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment!`;
+    }
+
     if (channelMessaged.has(msg.channel.id + type)) {
         // Do nothing. We don't want to spam everyone all the time.
     } else {
-        msg.channel.send(`Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment!`)
+        msg.channel.send(cooldownMessage)
 
         messaged = true;
         channelMessaged.add(msg.channel.id + type);
@@ -194,6 +222,14 @@ function controlTalkedRecently(msg, type, cooldownmessage = true, cooldowntime =
                 }, cooldowntime);
         return true;
     }
+}
+
+// Temporarily block a user after they've been mean to Canni.
+function blockUser(msg, timeout) {
+    userBlocked.add(msg.author.id);
+    setTimeout(() => {
+        userBlocked.delete(msg.author.id);
+    }, timeout);
 }
 
 function getBizaamEmoji() {
