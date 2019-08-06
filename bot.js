@@ -324,7 +324,7 @@ function getHugEmoji() {
 
 function getLoveEmoji() {
     if (loveEmoji === null) {
-        loveEmoji = client.emojis.find(emoji => emoji.name === "love");
+        loveEmoji = client.emojis.find(emoji => emoji.name === "Love");
         if(loveEmoji === null) {// added little code for when the bot is running ouside of galacon server
             loveEmoji = "🤗";
         }
