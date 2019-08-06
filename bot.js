@@ -10,6 +10,7 @@ const userBlocked = new Set();
 const bizaamType = 'bizaam';
 const bestPonyType = 'best-pony';
 const assfartType = 'assfart';
+const fantaType = 'cocacola';
 const interjectType = 'interject';
 const canniBestPonyType = 'canni-best-pony';
 const bizaamBestPonyType = 'bizaam-best-pony';
@@ -66,10 +67,43 @@ client.on('message', msg => {
             {
                 msg.channel.send("( ͡° ͜ʖ (\\  *BOOPS* " + '<@' + users[i].id + ">");
             }
-            msg.delete(0);//make sure the bot gets manage text permissions , otherwise it will fail silently
+            msg.delete(0);//make sure the bot gets manage text permissions , otherwise it will fail silently-Merte
         }
     }
-    //i noticed there was a lot of interest in becomming a memer, sooo i thought lets automate!
+
+    if (msg_contains(msg, "fanta")) {//Fanta jokes! -merte
+        if (controlTalkedRecently(msg, fantaType)) {
+            let rndm = randomIntFromInterval(1, 8);
+            switch (rndm) {
+                case 1:
+                    msg.channel.send(`There's no wrong way to Fanta size`);
+                break;
+                case 2:
+                    msg.channel.send(`Is this real life, is this just Fanta sea?`);
+                break;
+                case 3:
+                    msg.channel.send(`I had a dream I was drowning in an ocean of orange soda\nThank god it was only a Fanta sea`);
+                break;
+                case 4:
+                    msg.channel.send(`When I drink alcohol people call me an alcoholic but when I drink Fanta...\nNobody calls me or texts me guys I'm loneley`);
+                break;
+                case 5:
+                    msg.channel.send(`Soaking a twig in coke is nice, but soaking a twig in fanta...\nFanta stick.`);
+                break;
+                case 6:
+                    msg.channel.send(`Whats so funny about fanta`);
+                break;
+                case 7:
+                    msg.channel.send(`fanta is Cannibot fuel`);
+                break;
+                case 8:
+                    msg.channel.send(`Perry doesn't like Fanta jokes...`);
+                break;
+                
+            }
+        }
+    }
+    //i noticed there was a lot of interest in becomming a memer, sooo i thought lets automate!-Merte
     //the bot will need to have the rights to give/take meme rolls
     if (msg_contains(msg, 'i want to be a meme master')) {
         try {
@@ -335,6 +369,8 @@ function msg_starts(msg, text) {
         return false;
     }
 }
-
+function randomIntFromInterval(min, max) { //random number generator with min-max -merte
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
 
 client.login(auth.token);
