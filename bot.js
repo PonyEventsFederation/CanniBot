@@ -59,7 +59,7 @@ client.on('message', msg => {
             let users = msg.mentions.users.array();
             for(let i = 0; i < users.length; i++)
             {
-                msg.channel.send(msg.author + " ( ͡° ͜ʖ (\\  *BOOPS* " + '<@' + users[i].id + ">");
+                msg.channel.send("( ͡° ͜ʖ (\\  *BOOPS* " + '<@' + users[i].id + ">");
             }
             msg.delete(0);//make sure the bot gets manage text permissions , otherwise it will fail silently-Merte
         }
