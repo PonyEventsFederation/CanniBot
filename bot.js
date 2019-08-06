@@ -1,4 +1,6 @@
-const https = require('https');
+const rp = require('request-promise');
+
+const fs = require('fs');
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -15,9 +17,10 @@ const assFartBestPonyType = 'assfart-best-pony';
 const canniworstPonyType = 'canny-worst-pony';
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
-//const channelUploadID = GetChannelUploadID();
-
 const auth = require('./auth.json');
+
+var channelUploadID = undefined;
+var channelUploadList = undefined;
 
 var messaged = false;
 var bizaamEmoji = null;
@@ -42,6 +45,9 @@ client.on('ready', () => {
             client.user.setActivity(`Time to Galacon: ${days} days, ${hrs}:${minutes} left! Hype!`, { type: 'PLAYING' });
         }
     }, 10000); // Every 10s?
+    setInterval(() => {
+        updateChannel();
+    }, 3600000);
 });
 
 client.on('message', msg => {
@@ -199,10 +205,6 @@ client.on('message', msg => {
             }
         }
     }
-
-    if (msg_starts(msg, "youtube")) {
-        msg.channel.send(`Found token "${GetChannelUploadID()}" for CanniSoda upload list"`);
-    }
 });
 
 function sendCooldownMessage(msg, type, cooldownTarget) {
@@ -296,39 +298,68 @@ function getLoveEmoji() {
     return loveEmoji;
 }
 
-function GetChannelUploadID(channelName = "CanniSoda")
-{
-    https.get('https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=${channelName}&key=${auth.youtube}', (res) => {
-        res.setEncoding('utf8');
-        let rawData = '';
-        res.on('data', (chunk) => {rawData += chunk;});
-        res.on('end', () => {
-            let data = JSON.parse(rawData);
-            if(res !== 200) {
-                console.log("Received error ${res} with message \"${data.error.message}\"");
-                res.resume(); // Clear response data to free up memory
-                return null;
-            }
-            res.resume();
-            return data.items[0].contentDetails.relatedPlaylists.uploads;
-        });
-    });
-    return null;
+async function updateChannel() {
+    channelUploadList = [];
+    let token = "";
+    while(token !== undefined) {
+        const uploads = await getChannelUploadList(token);
+        if(!uploads) {
+            break;
+        }
+        for(let i = 0; i < uploads.body.items.length; i++)
+        channelUploadList.push(uploads.body.items[i]);
+        token = uploads.body.nextPageToken;
+    }
 }
 
-/*function getVideoList()
+async function getChannelUploadID(channelName = "CanniSoda")
 {
-    if(channelUploadID === null)
-        return {};
-    request('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${channelUploadID}&key=${auth.youtube}', function (error, response, body) {
-        if(response.statusCode !== 200) {
-            console.log("Received error ${response.statusCode} with message \"${body.error.message}\"");
-            return {};
-        }
-        let videoData = JSON.parse(body);
-        return videoData;
-    });
-}*/
+    let options = {
+        uri: "https://www.googleapis.com/youtube/v3/channels",
+        qs: {
+            part:           "contentDetails",
+            forUsername:    channelName,
+            key:            auth.youtube
+        },
+        resolveWithFullResponse:    true,
+        json:   true
+    }
+    try {
+        let response = await rp(options);
+        return Promise.resolve(response);
+    }
+    catch (error) {
+        return Promise.reject(error)
+    }
+}
+
+async function getChannelUploadList(pageToken = "")
+{
+    if(channelUploadID === undefined) {
+        let body = await getChannelUploadID();
+        channelUploadID = body.body.items[0].contentDetails.relatedPlaylists.uploads;
+    }
+    let options = {
+        uri: "https://www.googleapis.com/youtube/v3/playlistItems",
+        qs: {
+            part:           "snippet",
+            playlistId:     channelUploadID,
+            key:            auth.youtube,
+            maxResults:     50
+        },
+        resolveWithFullResponse:    true,
+        json:   true
+    }
+    if(pageToken !== "")
+        options.qs.pageToken = pageToken;
+    try {
+        let response = await rp(options);
+        return Promise.resolve(response);
+    }
+    catch (error) {
+        return Promise.reject(error)
+    }
+}
 
 
 // "msg_contains(msg, text)" is a shorter version of "msg.content.toLowerCase().includes(text)"
