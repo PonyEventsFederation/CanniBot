@@ -1,5 +1,7 @@
 const rp = require('request-promise');
 
+const fs = require('fs');
+
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const talkedRecently = new Set();
@@ -41,7 +43,7 @@ client.on('ready', () => {
     }, 10000); // Every 10s?
     setInterval(() => {
         updateChannel();
-    });
+    }, 3600000);
 });
 
 client.on('message', msg => {
