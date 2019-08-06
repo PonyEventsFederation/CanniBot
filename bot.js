@@ -248,7 +248,7 @@ function GetChannelUploadID(channelName = "CanniSoda")
         res.on('end', () => {
             let videoData = JSON.parse(rawData);
             if(res.statusCode !== 200) {
-                console.log(`Received error ${res.statusCode}, reason \"${data.error.errors[0].reason}\" and message \"${data.error.errors[0].message}\"`);
+                //console.log(`Received error ${res.statusCode}, reason \"${data.error.errors[0].reason}\" and message \"${data.error.errors[0].message}\"`);
             }
             else {
                 channelUploadID = videoData.items[0].contentDetails.relatedPlaylists.uploads;
