@@ -79,7 +79,7 @@ client.on('message', msg => {
                     msg.channel.send(`I had a dream I was drowning in an ocean of orange soda\nThank god it was only a Fanta sea`);
                 break;
                 case 4:
-                    msg.channel.send(`When I drink alcohol people call me an alcoholic but when I drink Fanta...\nNobody calls me or texts me guys I'm loneley`);
+                    msg.channel.send(`When I drink alcohol people call me an alcoholic but when I drink Fanta...\nNobody calls me or texts me guys I'm lonely`);
                 break;
                 case 5:
                     msg.channel.send(`Soaking a twig in coke is nice, but soaking a twig in fanta...\nFanta stick.`);
