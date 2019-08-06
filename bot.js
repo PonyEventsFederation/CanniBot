@@ -91,7 +91,7 @@ client.on('message', msg => {
         }
     }
 
-    if (msg_contains(msg, "fanta ")) {//Fanta jokes! -merte
+    if (msg_contains_word(msg, "fanta")) {//Fanta jokes! -merte
         if (controlTalkedRecently(msg, fantaType)) {
             let rndm = randomIntFromInterval(1, 8);
             switch (rndm) {
@@ -467,6 +467,19 @@ function msg_starts(msg, text) {
 }
 function randomIntFromInterval(min, max) { //random number generator with min-max -merte
   return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function msg_contains_word(msg, word)
+{
+    let content = msg.content.toLowerCase();
+    let wrd = word.toLowerCase();
+    let wrdArray = content.split(" ");
+    for(var i = 0; i < wrdArray.length; i++)
+    {
+        if(wrd === wrdArray[i])
+            return true;
+    }
+    return false;
 }
 
 client.login(auth.token);
