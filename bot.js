@@ -253,7 +253,7 @@ function sendCooldownMessage(msg, type, cooldownTarget) {
             var cooldownMessage = dparse("ans_cooldown_love",[msg.getErrorEmoji()]);
             break;
         default:
-            var cooldownMessage = dparse("ans_cooldown_love",[msg.author,msg.getErrorEmoji()]);
+            var cooldownMessage = dparse("ans_cooldown_default",[msg.author,msg.getErrorEmoji()]);
     }
 
     if (channelMessaged.has(cooldownTarget)) {
