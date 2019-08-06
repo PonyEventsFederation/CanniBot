@@ -104,7 +104,7 @@ client.on('message', msg => {
             if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
                 let memeroll = msg.guild.roles.find(role => role.name === "Meme");
                 if (msg.member.roles.some(r => ["Meme"].includes(r.name))) {
-                    msg.channel.send(`${msg.author} your already well on your way to become a Meme Master`);
+                    msg.channel.send(`${msg.author} You're already well on the way to become a Meme Master`);
                 }
                 else {
                     msg.channel.send(`${msg.author}
@@ -128,7 +128,7 @@ client.on('message', msg => {
             if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
                 let memeroll = msg.guild.roles.find(role => role.name === "Meme");
                 if (msg.member.roles.some(r => ["Meme"].includes(r.name))) {
-                    msg.channel.send(`${msg.author} your already well on your way to become a Meme Master`);
+                    msg.channel.send(`${msg.author} You're already well on the way to become a Meme Master`);
                 }
                 else {
                     msg.channel.send(`${msg.author} You have sealed your destiny!
