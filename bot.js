@@ -88,7 +88,7 @@ client.on('message', msg => {
         }
     }
 
-    if (msg_contains(msg, "fanta")) {//Fanta jokes! -merte
+    if (msg_contains(msg, "fanta ")) {//Fanta jokes! -merte
         if (controlTalkedRecently(msg, fantaType)) {
             let rndm = randomIntFromInterval(1, 8);
             switch (rndm) {
@@ -102,7 +102,7 @@ client.on('message', msg => {
                     msg.channel.send(`I had a dream I was drowning in an ocean of orange soda\nThank god it was only a Fanta sea`);
                 break;
                 case 4:
-                    msg.channel.send(`When I drink alcohol people call me an alcoholic but when I drink Fanta...\nNobody calls me or texts me guys I'm loneley`);
+                    msg.channel.send(`When I drink alcohol people call me an alcoholic but when I drink Fanta...\nNobody calls me or texts me guys I'm lonely`);
                 break;
                 case 5:
                     msg.channel.send(`Soaking a twig in coke is nice, but soaking a twig in fanta...\nFanta stick.`);
@@ -127,7 +127,7 @@ client.on('message', msg => {
             if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
                 let memeroll = msg.guild.roles.find(role => role.name === "Meme");
                 if (msg.member.roles.some(r => ["Meme"].includes(r.name))) {
-                    msg.channel.send(`${msg.author} your already well on your way to become a Meme Master`);
+                    msg.channel.send(`${msg.author} You're already well on the way to become a Meme Master`);
                 }
                 else {
                     msg.channel.send(`${msg.author}
@@ -151,7 +151,7 @@ client.on('message', msg => {
             if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
                 let memeroll = msg.guild.roles.find(role => role.name === "Meme");
                 if (msg.member.roles.some(r => ["Meme"].includes(r.name))) {
-                    msg.channel.send(`${msg.author} your already well on your way to become a Meme Master`);
+                    msg.channel.send(`${msg.author} You're already well on the way to become a Meme Master`);
                 }
                 else {
                     msg.channel.send(`${msg.author} You have sealed your destiny!
