@@ -65,7 +65,7 @@ client.on('message', msg => {
         }
     }
 
-    if (msg_contains(msg, "fanta")) {//Fanta jokes! -merte
+    if (msg_contains(msg, "fanta ")) {//Fanta jokes! -merte
         if (controlTalkedRecently(msg, fantaType)) {
             let rndm = randomIntFromInterval(1, 8);
             switch (rndm) {
