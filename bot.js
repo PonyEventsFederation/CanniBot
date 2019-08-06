@@ -14,7 +14,9 @@ const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
 const auth = require('./auth.json');
 
-var channelUploadID = GetChannelUploadID();
+var channelUploadID = undefined;
+var channelUploadList = undefined;
+updateChannel();
 
 var messaged = false;
 var bizaamEmoji = null;
@@ -212,50 +214,95 @@ function getHugEmoji() {
     return hugEmoji;
 }
 
-function GetChannelUploadID(channelName = "CanniSoda")
-{
-    let data = undefined;
-    let properties = new Object();
-    properties.defaultPort = 443;
-    properties.host = "www.googleapis.com";
-    properties.method = "GET";
-    properties.path = `/youtube/v3/channels?part=contentDetails&forUsername=${channelName}&key=${auth.youtube}`;
-    properties.protocol = "https:"
-    https.get(properties, (res) => {
-        res.setEncoding('utf8');
-        let rawData = '';
-        res.on('data', (chunk) => {rawData += chunk;});
-        res.on('end', () => {
-            let videoData = JSON.parse(rawData);
-            if(res.statusCode !== 200) {
-                console.log(`Received error ${res.statusCode}, reason \"${data.error.errors[0].reason}\" and message \"${data.error.errors[0].message}\"`);
-            }
-            else {
-                channelUploadID = videoData.items[0].contentDetails.relatedPlaylists.uploads;
-            }
+function updateChannel() {
+    let ret;
+    asyncChannelCall(getChannelUploadID).then(ret => {
+        channelUploadID = ret;
+    }).then(() => {
+        channelUploadList = [];
+        asyncChannelCall(getChannelUploadList).then(ret => {
+            channelUploadList.push(ret.items);
         });
     });
 }
 
-/*function getVideoList()
+async function asyncChannelCall(functionCall, argument = "") {
+    try {
+        let response;
+        if(argument !== "")
+            response = await functionCall(argument);
+        else
+            response = await functionCall();
+        console.log(`Returning ${response}`);
+        return response;
+    }
+    catch(error) {
+        console.log(error);
+    }
+}
+
+function getChannelUploadID(channelName = "CanniSoda")
 {
-    if(channelUploadID === null)
-        return {};
-    https.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${channelUploadID}&key=${auth.youtube}', (res) => {
-        res.setEncoding('utf8');
-        let rawData = '';
-        res.on('data', (chunk) => {rawData += chunk;});
-        res.on('end', () => {
-            let data = JSON.parse(rawData);
-            if(res.statusCode !== 200) {
-                console.log(`Received error ${res.statusCode} with message \"${data.error.message}\"`);
-                return {};
-            }
-            return data;
+    return new Promise((resolve, reject) => {
+        let properties = new Object();
+        properties.defaultPort = 443;
+        properties.host = "www.googleapis.com";
+        properties.method = "GET";
+        properties.path = `/youtube/v3/channels?part=contentDetails&forUsername=${channelName}&key=${auth.youtube}`;
+        properties.protocol = "https:"
+        https.get(properties, (res) => {
+            res.setEncoding('utf8');
+            let rawData = '';
+            res.on('data', (chunk) => {rawData += chunk;});
+            res.on('end', () => {
+                let videoData = JSON.parse(rawData);
+                if(res.statusCode !== 200) {
+                    console.log(`Received error ${res.statusCode}, reason \"${videoData.error.errors[0].reason}\" and message \"${videoData.error.errors[0].message}\"`);
+                    resolve(undefined);
+                }
+                else {
+                    resolve(videoData.items[0].contentDetails.relatedPlaylists.uploads);
+                }
+            });
+            res.on('error', (error) => {
+                reject(error);
+            });
         });
     });
-    return {};
-}*/
+}
+
+function getChannelUploadList(pageToken = "")
+{
+    return new Promise((resolve, reject) => {
+        if(channelUploadID === undefined)
+            resolve(undefined);
+        let properties = new Object()
+        properties.defaultPort = 443;
+        properties.host = "www.googleapis.com";
+        properties.method = "GET";
+        if(pageToken === "") {
+            properties.path = `/youtube/v3/playlistItems?part=snippet&playlistId=${channelUploadID}&key=${auth.youtube}&maxResults=50`;
+        }
+        else {
+            properties.path = `/youtube/v3/playlistItems?part=snippet&playlistId=${channelUploadID}&key=${auth.youtube}&maxResults=50&pageToken=${pageToken}`;
+        }
+        properties.protocol = "https:"
+        https.get(properties, (res) => {
+            res.setEncoding('utf8');
+            let rawData = '';
+            res.on('data', (chunk) => {rawData += chunk;});
+            res.on('end', () => {
+                let data = JSON.parse(rawData);
+                if(res.statusCode !== 200) {
+                    reject(`Received error ${res.statusCode}, reason \"${data.error.errors[0].reason}\" and message \"${data.error.errors[0].message}\"`);
+                }
+                else {
+                    resolve(data);
+                }
+            });
+        });
+    });
+}
 
 
 // "msg_contains(msg, text)" is a shorter version of "msg.content.toLowerCase().includes(text)"
