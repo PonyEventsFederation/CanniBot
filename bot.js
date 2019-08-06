@@ -178,9 +178,12 @@ client.on('message', msg => {
     if (msg_starts(msg,"hug")) {
         if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let user = msg.mentions.users.array()[0];
-            msg.channel.send(`Hey <@${user.id}>! ${msg.author} hugged you ${getHugEmoji()}`)
+            if (!userBlocked.has(user.id)) {
+                msg.channel.send(`Hey <@${user.id}>! ${msg.author} hugged you ${getHugEmoji()}`)
+            }
         }
     }
+
     if (msg_starts(msg, "youtube")) {
         msg.channel.send(`Found token "${GetChannelUploadID()}" for CanniSoda upload list"`);
     }
