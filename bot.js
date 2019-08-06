@@ -26,6 +26,8 @@ var channelUploadList = undefined;
 var messaged = false;
 var bizaamEmoji = null;
 var hugEmoji = null;
+var loveEmoji = null;
+var errorEmoji = null;
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -55,6 +57,21 @@ client.on('message', msg => {
     if (msg.author.bot) {
         return;
     }
+
+    if (msg.isMemberMentioned(client.user)) {
+        if (msg_contains(msg, 'i\'m sorry') || msg_contains(msg, 'i am sorry')) {
+            if (userBlocked.has(msg.author.id)) {
+                msg.channel.send(`${msg.author} ${getLoveEmoji()} Oh all right. I forgive you.`);
+                if (talkedRecently.has(msg.author.id)) {
+                    talkedRecently.delete(msg.author.id);
+                }
+                if (channelMessaged.has(msg.author.id)) {
+                    channelMessaged.delete(msg.author.id);
+                }
+                unblockUser(msg);
+            }
+        }
+     }
 
     if (userBlocked.has(msg.author.id)) {
         return;
@@ -209,7 +226,7 @@ client.on('message', msg => {
 
     if (msg_contains(msg, ' is worst pony')) {
         if (msg_contains(msg, 'canni is worst pony') || msg_contains(msg, 'canni soda is worst pony')) {
-            if (controlTalkedRecently(msg, canniworstPonyType)) {
+            if (controlTalkedRecently(msg, canniworstPonyType, true, 60000, 'individual')) {
                 msg.channel.send(msg.author + ` Why are you so mean to me?`);
             }
         }
@@ -218,43 +235,55 @@ client.on('message', msg => {
     if (msg_starts(msg,"hug")) {
         if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let user = msg.mentions.users.array()[0];
-            msg.channel.send(`Hey <@${user.id}>! ${msg.author} hugged you ${getHugEmoji()}`)
+            if (!userBlocked.has(user.id)) {
+                msg.channel.send(`Hey <@${user.id}>! ${msg.author} hugged you ${getHugEmoji()}`)
+            }
         }
     }
 });
 
-function sendCooldownMessage(msg, type) {
+function sendCooldownMessage(msg, type, cooldownTarget) {
     if (type == canniworstPonyType) {
         var cooldownMessage = `${msg.author} Fine, I'm not talking to you anymore for a while.`;
+        cooldownTarget = msg.author.id;
         blockUser(msg, 300000);
     } else {
-        var cooldownMessage = `Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment!`;
+        var cooldownMessage = `Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment! ${getErrorEmoji()}`;
     }
 
-    if (channelMessaged.has(msg.channel.id + type)) {
+    if (channelMessaged.has(cooldownTarget)) {
         // Do nothing. We don't want to spam everyone all the time.
     } else {
         msg.channel.send(cooldownMessage)
 
         messaged = true;
-        channelMessaged.add(msg.channel.id + type);
+        channelMessaged.add(cooldownTarget);
         setTimeout(() => {
-            channelMessaged.delete(msg.channel.id + type);
+            channelMessaged.delete(cooldownTarget);
         }, 60000);
     }
 }
 
 // "controlTalkedRecently" simplifies the antispam check. Sends the cooldown message as default. Retruns true when message can be send.
-function controlTalkedRecently(msg, type, cooldownmessage = true, cooldowntime = 60000) {
-    if (talkedRecently.has(msg.channel.id + type)) {
+function controlTalkedRecently(msg, type, cooldownmessage = true, cooldowntime = 60000, target = 'channel') {
+    switch (target) {
+        case 'channel':
+            var cooldownTarget = msg.channel.id + type;
+            break;
+        case 'individual':
+            var cooldownTarget = msg.author.id;
+            break;
+    }
+
+    if (talkedRecently.has(cooldownTarget)) {
         if (cooldownmessage) {
-            sendCooldownMessage(msg, type);
+            sendCooldownMessage(msg, type, cooldownTarget);
         }
         return false;
     } else {
-        talkedRecently.add(msg.channel.id + type);
+        talkedRecently.add(cooldownTarget);
                 setTimeout(() => {
-                  talkedRecently.delete(msg.channel.id + type);
+                  talkedRecently.delete(cooldownTarget);
                 }, cooldowntime);
         return true;
     }
@@ -266,6 +295,11 @@ function blockUser(msg, timeout) {
     setTimeout(() => {
         userBlocked.delete(msg.author.id);
     }, timeout);
+}
+
+// Manually unblock a user.
+function unblockUser(msg) {
+    userBlocked.delete(msg.author.id);
 }
 
 function getBizaamEmoji() {
@@ -282,10 +316,32 @@ function getHugEmoji() {
     if(hugEmoji === null) {
         hugEmoji = client.emojis.find(emoji => emoji.name === "hug");
         if(hugEmoji === null) {// added little code for when the bot is running ouside of galacon server
-                hugEmoji = "🤗";
+            hugEmoji = "🤗";
         }
     }
     return hugEmoji;
+}
+
+function getLoveEmoji() {
+    if (loveEmoji === null) {
+        loveEmoji = client.emojis.find(emoji => emoji.name === "love");
+        if(loveEmoji === null) {// added little code for when the bot is running ouside of galacon server
+            loveEmoji = "🤗";
+        }
+    }
+
+    return loveEmoji;
+}
+
+function getErrorEmoji() {
+    if (errorEmoji === null) {
+        errorEmoji = client.emojis.find(emoji => emoji.name === "error");
+        if(errorEmoji === null) {// added little code for when the bot is running ouside of galacon server
+            errorEmoji = "😫";
+        }
+    }
+
+    return errorEmoji;
 }
 
 async function updateChannel() {
