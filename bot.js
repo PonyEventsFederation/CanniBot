@@ -1,4 +1,6 @@
-const https = require('https');
+const rp = require('request-promise');
+
+const fs = require('fs');
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -18,11 +20,15 @@ const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
 const auth = require('./auth.json');
 
-var channelUploadID = GetChannelUploadID();
+var channelUploadID = undefined;
+var channelUploadList = undefined;
 
 var messaged = false;
 var bizaamEmoji = null;
 var hugEmoji = null;
+var loveEmoji = null;
+var errorEmoji = null;
+var shyEmohi = null;
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -42,13 +48,31 @@ client.on('ready', () => {
             client.user.setActivity(`Time to Galacon: ${days} days, ${hrs}:${minutes} left! Hype!`, { type: 'PLAYING' });
         }
     }, 10000); // Every 10s?
+    setInterval(() => {
+        updateChannel();
+    }, 3600000);
 });
 
 client.on('message', msg => {
-
-    if (msg.author.bot) {
+    var messageSent = false;
+    if(msg.author.bot){
         return;
     }
+
+    if (msg.isMemberMentioned(client.user)) {
+        if (msg_contains(msg, 'i\'m sorry') || msg_contains(msg, 'i am sorry')) {
+            if (userBlocked.has(msg.author.id)) {
+                msg.channel.send(`${msg.author} ${getLoveEmoji()} Oh all right. I forgive you.`);
+                if (talkedRecently.has(msg.author.id)) {
+                    talkedRecently.delete(msg.author.id);
+                }
+                if (channelMessaged.has(msg.author.id)) {
+                    channelMessaged.delete(msg.author.id);
+                }
+                unblockUser(msg);
+            }
+        }
+     }
 
     if (userBlocked.has(msg.author.id)) {
         return;
@@ -60,6 +84,7 @@ client.on('message', msg => {
             for(let i = 0; i < users.length; i++)
             {
                 msg.channel.send("( ͡° ͜ʖ (\\  *BOOPS* " + '<@' + users[i].id + ">");
+                messageSent = true;
             }
             msg.delete(0);//make sure the bot gets manage text permissions , otherwise it will fail silently-Merte
         }
@@ -95,6 +120,7 @@ client.on('message', msg => {
                 break;
                 
             }
+            messageSent = true;
         }
     }
     //i noticed there was a lot of interest in becomming a memer, sooo i thought lets automate!-Merte
@@ -117,8 +143,10 @@ client.on('message', msg => {
                 and i will try to find a way to let you in!
                 this message will selfdestruct in 10 seconds`).then(message => message.delete(15000));
                     msg.delete(10);
+
                 }
             }
+            messageSent = true;
         }catch (e) {
             msg.channel.send(`${msg.author} Sorry, something went wrong with my circuits`)
         }
@@ -140,6 +168,7 @@ client.on('message', msg => {
                     msg.member.addRole(memeroll).catch(console.error);
                     msg.delete(10);
                 }
+                messageSent = true;
             }
         }catch (e) {
             msg.channel.send(`${msg.author} Sorry, something went wrong with my circuits`)
@@ -154,12 +183,14 @@ client.on('message', msg => {
             });
 
             msg.react(getBizaamEmoji());
+            messageSent = true;
         }
     }
 
     if (msg_contains(msg, "assfart") && !msg_contains(msg, 'assfart is best pony')) {
         if (controlTalkedRecently(msg, assfartType)) {
             msg.channel.send(`Shut up ${msg.author}, its Ausfahrt!`);
+            messageSent = true;
         }
     }
 
@@ -175,80 +206,113 @@ client.on('message', msg => {
         let minutes = Math.floor(seconds / 60);
         seconds -= minutes * 60;
         msg.channel.send(`${days} days, ${hrs} hours, ${minutes} minutes and ${Math.floor(seconds)} seconds left! IT TAKES FOREVERHHH`);
+        messageSent = true;
     }
 
     if (msg_contains(msg, ' is best pony')) {
         if (msg_contains(msg, 'who is best pony')) {
             if (controlTalkedRecently(msg, bestPonyType)) {
                 msg.channel.send(msg.author + ` ${getBizaamEmoji()} I am, of course!`);
+                messageSent = true;
             }
         } else if (msg_contains(msg, 'canni is best pony') || msg_contains(msg, 'canni soda is best pony')) {
             if (controlTalkedRecently(msg, canniBestPonyType)) {
                 msg.channel.send(msg.author + ` I sure am!`);
+                messageSent = true;
             }
         } else if (msg_contains(msg, 'bizaam is best pony') || msg_contains(msg, `${getBizaamEmoji()} is best pony`)) {
             if (controlTalkedRecently(msg, bizaamBestPonyType, false)) { // Don't send CD message here. It's not required.
                 msg.channel.send(msg.author + ` A bizaam isn't a pony, silly...`);
+                messageSent = true;
             }
         } else if (msg_contains(msg, 'assfart is best pony')) {
             if (controlTalkedRecently(msg, assFartBestPonyType, false)) { // Don't send CD message here. It's not required.
                 msg.channel.send(msg.author + ` Rude!`);
+                messageSent = true;
             }
         }else {
             if (controlTalkedRecently(msg, interjectType, false)) { // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
                 msg.channel.send(msg.author + ` Nu-uh. I am best pony!`);
+                messageSent = true;
             }
         }
+
     }
 
     if (msg_contains(msg, ' is worst pony')) {
         if (msg_contains(msg, 'canni is worst pony') || msg_contains(msg, 'canni soda is worst pony')) {
-            if (controlTalkedRecently(msg, canniworstPonyType)) {
+            if (controlTalkedRecently(msg, canniworstPonyType, true, 60000, 'individual')) {
                 msg.channel.send(msg.author + ` Why are you so mean to me?`);
+                messageSent = true;
             }
+
         }
     }
 
     if (msg_starts(msg,"hug")) {
         if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let user = msg.mentions.users.array()[0];
-            msg.channel.send(`Hey <@${user.id}>! ${msg.author} hugged you ${getHugEmoji()}`)
+            if (!userBlocked.has(user.id)) {
+                msg.channel.send(`Hey <@${user.id}>! ${msg.author} hugged you ${getHugEmoji()}`)
+                msg.delete(0);
+                messageSent = true;
+            }
+        }
+    }
+    if(!messageSent){
+        if(msg.isMemberMentioned(client.user)){
+            msg.channel.send(`I'm sorry, I don't understand what you're saying, I'm still learning ${getShyEmoji()}`);
+        }else{
+            let rnd = randomIntFromInterval(0, 200);
+            if(rnd === 10){
+                msg.channel.send(`Boop ${msg.author}! I'm bored!`)
+            }
         }
     }
 });
-
-function sendCooldownMessage(msg, type) {
+function sendCooldownMessage(msg, type, cooldownTarget) {
     if (type == canniworstPonyType) {
         var cooldownMessage = `${msg.author} Fine, I'm not talking to you anymore for a while.`;
+        cooldownTarget = msg.author.id;
         blockUser(msg, 300000);
     } else {
-        var cooldownMessage = `Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment!`;
+        var cooldownMessage = `Hello ${msg.author}! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment! ${getErrorEmoji()}`;
     }
 
-    if (channelMessaged.has(msg.channel.id + type)) {
+    if (channelMessaged.has(cooldownTarget)) {
         // Do nothing. We don't want to spam everyone all the time.
     } else {
         msg.channel.send(cooldownMessage)
 
         messaged = true;
-        channelMessaged.add(msg.channel.id + type);
+        channelMessaged.add(cooldownTarget);
         setTimeout(() => {
-            channelMessaged.delete(msg.channel.id + type);
+            channelMessaged.delete(cooldownTarget);
         }, 60000);
+
     }
 }
 
 // "controlTalkedRecently" simplifies the antispam check. Sends the cooldown message as default. Retruns true when message can be send.
-function controlTalkedRecently(msg, type, cooldownmessage = true, cooldowntime = 60000) {
-    if (talkedRecently.has(msg.channel.id + type)) {
+function controlTalkedRecently(msg, type, cooldownmessage = true, cooldowntime = 60000, target = 'channel') {
+    switch (target) {
+        case 'channel':
+            var cooldownTarget = msg.channel.id + type;
+            break;
+        case 'individual':
+            var cooldownTarget = msg.author.id;
+            break;
+    }
+
+    if (talkedRecently.has(cooldownTarget)) {
         if (cooldownmessage) {
-            sendCooldownMessage(msg, type);
+            sendCooldownMessage(msg, type, cooldownTarget);
         }
         return false;
     } else {
-        talkedRecently.add(msg.channel.id + type);
+        talkedRecently.add(cooldownTarget);
                 setTimeout(() => {
-                  talkedRecently.delete(msg.channel.id + type);
+                  talkedRecently.delete(cooldownTarget);
                 }, cooldowntime);
         return true;
     }
@@ -260,6 +324,11 @@ function blockUser(msg, timeout) {
     setTimeout(() => {
         userBlocked.delete(msg.author.id);
     }, timeout);
+}
+
+// Manually unblock a user.
+function unblockUser(msg) {
+    userBlocked.delete(msg.author.id);
 }
 
 function getBizaamEmoji() {
@@ -276,56 +345,106 @@ function getHugEmoji() {
     if(hugEmoji === null) {
         hugEmoji = client.emojis.find(emoji => emoji.name === "hug");
         if(hugEmoji === null) {// added little code for when the bot is running ouside of galacon server
-                hugEmoji = "🤗";
+            hugEmoji = "🤗";
         }
     }
     return hugEmoji;
 }
 
-function GetChannelUploadID(channelName = "CanniSoda")
-{
-    let data = undefined;
-    let properties = new Object();
-    properties.defaultPort = 443;
-    properties.host = "www.googleapis.com";
-    properties.method = "GET";
-    properties.path = `/youtube/v3/channels?part=contentDetails&forUsername=${channelName}&key=${auth.youtube}`;
-    properties.protocol = "https:"
-    https.get(properties, (res) => {
-        res.setEncoding('utf8');
-        let rawData = '';
-        res.on('data', (chunk) => {rawData += chunk;});
-        res.on('end', () => {
-            let videoData = JSON.parse(rawData);
-            if(res.statusCode !== 200) {
-                //console.log(`Received error ${res.statusCode}, reason \"${data.error.errors[0].reason}\" and message \"${data.error.errors[0].message}\"`);
-            }
-            else {
-                channelUploadID = videoData.items[0].contentDetails.relatedPlaylists.uploads;
-            }
-        });
-    });
+function getShyEmoji() {
+    if(shyEmohi === null) {
+        shyEmohi = client.emojis.find(emoji => emoji.name === "Shy");
+        if(shyEmohi === null) {// added little code for when the bot is running ouside of galacon server
+            shyEmohi = "😳";
+        }
+    }
+    return shyEmohi;
 }
 
-/*function getVideoList()
+function getLoveEmoji() {
+    if (loveEmoji === null) {
+        loveEmoji = client.emojis.find(emoji => emoji.name === "Love");
+        if(loveEmoji === null) {// added little code for when the bot is running ouside of galacon server
+            loveEmoji = "🤗";
+        }
+    }
+
+    return loveEmoji;
+}
+
+function getErrorEmoji() {
+    if (errorEmoji === null) {
+        errorEmoji = client.emojis.find(emoji => emoji.name === "Error");
+        if(errorEmoji === null) {// added little code for when the bot is running ouside of galacon server
+            errorEmoji = "😫";
+        }
+    }
+
+    return errorEmoji;
+}
+
+async function updateChannel() {
+    channelUploadList = [];
+    let token = "";
+    while(token !== undefined) {
+        const uploads = await getChannelUploadList(token);
+        if(!uploads) {
+            break;
+        }
+        for(let i = 0; i < uploads.body.items.length; i++)
+        channelUploadList.push(uploads.body.items[i]);
+        token = uploads.body.nextPageToken;
+    }
+}
+
+async function getChannelUploadID(channelName = "CanniSoda")
 {
-    if(channelUploadID === null)
-        return {};
-    https.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${channelUploadID}&key=${auth.youtube}', (res) => {
-        res.setEncoding('utf8');
-        let rawData = '';
-        res.on('data', (chunk) => {rawData += chunk;});
-        res.on('end', () => {
-            let data = JSON.parse(rawData);
-            if(res.statusCode !== 200) {
-                console.log(`Received error ${res.statusCode} with message \"${data.error.message}\"`);
-                return {};
-            }
-            return data;
-        });
-    });
-    return {};
-}*/
+    let options = {
+        uri: "https://www.googleapis.com/youtube/v3/channels",
+        qs: {
+            part:           "contentDetails",
+            forUsername:    channelName,
+            key:            auth.youtube
+        },
+        resolveWithFullResponse:    true,
+        json:   true
+    }
+    try {
+        let response = await rp(options);
+        return Promise.resolve(response);
+    }
+    catch (error) {
+        return Promise.reject(error)
+    }
+}
+
+async function getChannelUploadList(pageToken = "")
+{
+    if(channelUploadID === undefined) {
+        let body = await getChannelUploadID();
+        channelUploadID = body.body.items[0].contentDetails.relatedPlaylists.uploads;
+    }
+    let options = {
+        uri: "https://www.googleapis.com/youtube/v3/playlistItems",
+        qs: {
+            part:           "snippet",
+            playlistId:     channelUploadID,
+            key:            auth.youtube,
+            maxResults:     50
+        },
+        resolveWithFullResponse:    true,
+        json:   true
+    }
+    if(pageToken !== "")
+        options.qs.pageToken = pageToken;
+    try {
+        let response = await rp(options);
+        return Promise.resolve(response);
+    }
+    catch (error) {
+        return Promise.reject(error)
+    }
+}
 
 
 // "msg_contains(msg, text)" is a shorter version of "msg.content.toLowerCase().includes(text)"
