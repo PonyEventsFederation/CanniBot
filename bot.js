@@ -119,15 +119,16 @@ client.on('message', msg => {
         return;
     }
 
-    if (msg_contains_word(msg, "fanta")) {//Fanta jokes! -merte
+    // Random Fanta jokes.
+    if (msg_contains_word(msg, "fanta")) {
         if (controlTalkedRecently(msg, fantaType)) {
             let rndm = randomIntFromInterval(0, data["ans_fanta_list"].length-1);
             msg.channel.send(parse(data["ans_fanta_list"][rndm]));
             messageSent = true;
         }
     }
-    //i noticed there was a lot of interest in becomming a memer, sooo i thought lets automate!-Merte
-    //the bot will need to have the rights to give/take meme rolls
+
+    // Automatic meme role assignment.
     if (msg_contains(msg, 'i want to be a meme master')) {
         try {
             if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
@@ -145,7 +146,8 @@ client.on('message', msg => {
         }
     }
 
-    if (msg_contains(msg, 'i really want to be a meme master')) {// create stuff to automaticly become a memer
+    // Meme role assignment confirmation.
+    if (msg_contains(msg, 'i really want to be a meme master')) {
         try {
             if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
                 if (msg.member.roles.some(r => ["Meme"].includes(r.name))) {
@@ -328,7 +330,9 @@ function unblockUser(msg) {
 function getBizaamEmoji() {
     if (bizaamEmoji === null) {
         bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
-        if (bizaamEmoji === null) {// added little code for when the bot is running ouside of galacon server
+
+        // Generic code for when Galacon specific emoji are unavailable.
+        if (bizaamEmoji === null) {
             bizaamEmoji = "😃";
         }
     }
@@ -339,7 +343,9 @@ function getBizaamEmoji() {
 function getHugEmoji() {
     if(hugEmoji === null) {
         hugEmoji = client.emojis.find(emoji => emoji.name === "hug");
-        if(hugEmoji === null) {// added little code for when the bot is running ouside of galacon server
+
+        // Generic code for when Galacon specific emoji are unavailable.
+        if(hugEmoji === null) {
             hugEmoji = "🤗";
         }
     }
@@ -350,7 +356,9 @@ function getHugEmoji() {
 function getShyEmoji() {
     if(shyEmohi === null) {
         shyEmohi = client.emojis.find(emoji => emoji.name === "Shy");
-        if(shyEmohi === null) {// added little code for when the bot is running ouside of galacon server
+
+        // Generic code for when Galacon specific emoji are unavailable.
+        if(shyEmohi === null) {
             shyEmohi = "😳";
         }
     }
@@ -360,7 +368,9 @@ function getShyEmoji() {
 function getLoveEmoji() {
     if (loveEmoji === null) {
         loveEmoji = client.emojis.find(emoji => emoji.name === "Love");
-        if(loveEmoji === null) {// added little code for when the bot is running ouside of galacon server
+
+        // Generic code for when Galacon specific emoji are unavailable.
+        if(loveEmoji === null) {
             loveEmoji = "🤗";
         }
     }
@@ -371,7 +381,9 @@ function getLoveEmoji() {
 function getErrorEmoji() {
     if (errorEmoji === null) {
         errorEmoji = client.emojis.find(emoji => emoji.name === "Error");
-        if(errorEmoji === null) {// added little code for when the bot is running ouside of galacon server
+
+        // Generic code for when Galacon specific emoji are unavailable.
+        if(errorEmoji === null) {
             errorEmoji = "😫";
         }
     }
@@ -459,7 +471,7 @@ function msg_starts(msg, text) {
     }
 }
 
-function randomIntFromInterval(min, max) { //random number generator with min-max -merte
+function randomIntFromInterval(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
