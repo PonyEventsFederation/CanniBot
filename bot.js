@@ -56,7 +56,6 @@ client.on('ready', () => {
 
 client.on('message', msg => {
     var messageSent = false;
-    const roleMeme = msg.guild.roles.find(role => role.name === "Meme");
 
     if(msg.author.bot){
         return;
@@ -128,42 +127,6 @@ client.on('message', msg => {
         }
     }
 
-    // Automatic meme role assignment.
-    if (msg_contains(msg, 'i want to be a meme master')) {
-        try {
-            if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
-
-                if (msg.member.roles.some(r => ["Meme"].includes(r.name))) {
-                    msg.channel.send(dparse("ans_meme_already", [msg.author]));
-                }
-                else {
-                    msg.channel.send(dparse("ans_meme1", [msg.author]));
-                }
-            }
-            messageSent = true;
-        }catch (e) {
-            msg.channel.send(dparse("ans_meme_error",[msg.author, getErrorEmoji()]))
-        }
-    }
-
-    // Meme role assignment confirmation.
-    if (msg_contains(msg, 'i really want to be a meme master')) {
-        try {
-            if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
-                if (msg.member.roles.some(r => ["Meme"].includes(r.name))) {
-                    msg.channel.send(dparse("ans_meme_already", [msg.author]));
-                }
-                else {
-                    msg.channel.send(dparse("ans_meme2", [msg.author,getBizaamEmoji()]));
-                    msg.member.addRole(roleMeme).catch(console.error);
-                }
-                messageSent = true;
-            }
-        }catch (e) {
-            msg.channel.send(dparse("ans_meme_error",[msg.author]))
-        }
-    }
-
     if (msg_contains(msg, "bizaam") && (!msg_contains(msg, 'is best pony'))) {
         if (controlTalkedRecently(msg, bizaamType)) {
             msg.channel.send(dparse("ans_bizaam",[getBizaamEmoji()])).then(sentEmbed => {
@@ -228,7 +191,7 @@ client.on('message', msg => {
         if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let user = msg.mentions.users.array()[0];
             if (!userBlocked.has(user.id)) {
-                msg.channel.send(dparse("ans_hug",[user.id,msg.author,getHugEmoji()])); // not sure how to implement mention in json
+                msg.channel.send(dparse("ans_hug",[user.id,msg.author,getHugEmoji()]));
                 msg.delete(0);
                 messageSent = true;
             }
