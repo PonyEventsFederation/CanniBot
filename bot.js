@@ -88,6 +88,11 @@ client.on('message', msg => {
             }
             return;
         }
+
+        if (msg_contains(msg, 'when is galacon')) {
+            nextGalacon(msg);
+            return;
+        }
      }
 
     if (userBlocked.has(msg.author.id)) {
@@ -178,18 +183,7 @@ client.on('message', msg => {
     }
 
     if (msg_starts(msg,"!when")) {
-        msg.channel.send(dparse("ans_next_gala1",[getBizaamEmoji()]));
-        let now = Date.now();
-        let diff =  galaconDate - now;
-        var seconds = parseInt(diff) / 1000;
-        let days = Math.floor(seconds / (3600 * 24));
-        seconds -= days*3600*24;
-        let hrs = Math.floor(seconds / 3600);
-        seconds -= hrs * 3600;
-        let minutes = Math.floor(seconds / 60);
-        seconds -= minutes * 60;
-        msg.channel.send(dparse("ans_next_gala2",[days,hrs,minutes,Math.floor(seconds)]));
-        messageSent = true;
+        nextGalacon(msg);
     }
 
     if (msg_contains(msg, ' is best pony')) {
@@ -252,6 +246,21 @@ client.on('message', msg => {
         }
     }
 });
+
+function nextGalacon(msg) {
+    msg.channel.send(dparse("ans_next_gala1",[getBizaamEmoji()]));
+    let now = Date.now();
+    let diff =  galaconDate - now;
+    var seconds = parseInt(diff) / 1000;
+    let days = Math.floor(seconds / (3600 * 24));
+    seconds -= days*3600*24;
+    let hrs = Math.floor(seconds / 3600);
+    seconds -= hrs * 3600;
+    let minutes = Math.floor(seconds / 60);
+    seconds -= minutes * 60;
+    msg.channel.send(dparse("ans_next_gala2",[days,hrs,minutes,Math.floor(seconds)]));
+    messageSent = true;
+}
 
 function sendCooldownMessage(msg, type, cooldownTarget) {
     switch (type) {
