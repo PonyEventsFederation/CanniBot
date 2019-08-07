@@ -329,7 +329,7 @@ function unblockUser(msg) {
 
 function getBizaamEmoji() {
     if (bizaamEmoji === null) {
-        bizaamEmoji = client.emojis.find(emoji => emoji.name === "bizaam");
+        bizaamEmoji = client.emojis.find(emoji => emoji.name.toLowerCase() === "bizaam");
 
         // Generic code for when Galacon specific emoji are unavailable.
         if (bizaamEmoji === null) {
@@ -342,7 +342,7 @@ function getBizaamEmoji() {
 
 function getHugEmoji() {
     if(hugEmoji === null) {
-        hugEmoji = client.emojis.find(emoji => emoji.name === "hug");
+        hugEmoji = client.emojis.find(emoji => emoji.name.toLowerCase() === "hug");
 
         // Generic code for when Galacon specific emoji are unavailable.
         if(hugEmoji === null) {
@@ -355,7 +355,7 @@ function getHugEmoji() {
 
 function getShyEmoji() {
     if(shyEmohi === null) {
-        shyEmohi = client.emojis.find(emoji => emoji.name === "Shy");
+        shyEmohi = client.emojis.find(emoji => emoji.name.toLowerCase() === "shy");
 
         // Generic code for when Galacon specific emoji are unavailable.
         if(shyEmohi === null) {
@@ -367,7 +367,7 @@ function getShyEmoji() {
 
 function getLoveEmoji() {
     if (loveEmoji === null) {
-        loveEmoji = client.emojis.find(emoji => emoji.name === "Love");
+        loveEmoji = client.emojis.find(emoji => emoji.name.toLowerCase() === "love");
 
         // Generic code for when Galacon specific emoji are unavailable.
         if(loveEmoji === null) {
@@ -380,7 +380,7 @@ function getLoveEmoji() {
 
 function getErrorEmoji() {
     if (errorEmoji === null) {
-        errorEmoji = client.emojis.find(emoji => emoji.name === "Error");
+        errorEmoji = client.emojis.find(emoji => emoji.name.toLowerCase() === "error");
 
         // Generic code for when Galacon specific emoji are unavailable.
         if(errorEmoji === null) {
