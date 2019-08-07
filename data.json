@@ -16,7 +16,7 @@
         "Perry doesn't like Fanta jokes..."
     ],
 
-    "ans_meme1":"%s So you want to be a Meme Master? \nYou should know that there are hidden dangers waiting for you there.\nThere is nothing I can do to help you...\nIf you really want to be a Meme Master, mention me with \"I REALLY want to be a Meme Master\"\nand I will try to find a way to let you in.",
+    "ans_meme1":"%s So you want to be a Meme Master? \nYou should know that there are hidden dangers waiting for you there.\nThere is nothing I can do to help you...\nIf you really want to be a Meme Master, mention me with \"**I REALLY want to be a Meme Master**\"\nand I will try to find a way to let you in.",
     "ans_meme2":"%s You have sealed your destiny!\nI will use my special powers to open the gateway between here and the memes.\nBehold the horrors, greater than what lives in the Everfree forest...\nBEHOLD! Bronies in the wild!!!\n%s BIIZAAAAAMM!!!",
     "ans_meme_error":"%s I'm sorry, something went wrong with my circuitry. %s",
     "ans_meme_already":"%s You're already well on the way to become a Meme Master",

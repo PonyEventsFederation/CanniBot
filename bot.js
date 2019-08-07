@@ -56,6 +56,8 @@ client.on('ready', () => {
 
 client.on('message', msg => {
     var messageSent = false;
+    const roleMeme = msg.guild.roles.find(role => role.name === "Meme");
+
     if(msg.author.bot){
         return;
     }
@@ -129,14 +131,12 @@ client.on('message', msg => {
     if (msg_contains(msg, 'i want to be a meme master')) {
         try {
             if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
-                let memeroll = msg.guild.roles.find(role => role.name === "Meme");
+
                 if (msg.member.roles.some(r => ["Meme"].includes(r.name))) {
                     msg.channel.send(dparse("ans_meme_already", [msg.author]));
                 }
                 else {
-                    msg.channel.send(dparse("ans_meme1", [msg.author])).then(message => message.delete(15000));
-                    msg.delete(10);
-
+                    msg.channel.send(dparse("ans_meme1", [msg.author]));
                 }
             }
             messageSent = true;
@@ -148,14 +148,12 @@ client.on('message', msg => {
     if (msg_contains(msg, 'i really want to be a meme master')) {// create stuff to automaticly become a memer
         try {
             if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
-                let memeroll = msg.guild.roles.find(role => role.name === "Meme");
                 if (msg.member.roles.some(r => ["Meme"].includes(r.name))) {
                     msg.channel.send(dparse("ans_meme_already", [msg.author]));
                 }
                 else {
-                    msg.channel.send(dparse("ans_meme1", [msg.author,getBizaamEmoji()])).then(message => message.delete(15000));
-                    msg.member.addRole(memeroll).catch(console.error);
-                    msg.delete(10);
+                    msg.channel.send(dparse("ans_meme2", [msg.author,getBizaamEmoji()]));
+                    msg.member.addRole(roleMeme).catch(console.error);
                 }
                 messageSent = true;
             }
