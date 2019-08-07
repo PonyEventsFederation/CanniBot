@@ -128,6 +128,7 @@ client.on('message', msg => {
             msg.channel.send(dparse("ans_meme_error",[msg.author]))
         }
     }
+
     if (msg_contains(msg, 'i really want to be a meme master')) {// create stuff to automaticly become a memer
         try {
             if (!msg.mentions.everyone && msg.isMentioned(client.user)) {
@@ -146,7 +147,6 @@ client.on('message', msg => {
             msg.channel.send(dparse("ans_meme_error",[msg.author]))
         }
     }
-
 
     if (msg_contains(msg, "bizaam") && (!msg_contains(msg, 'is best pony'))) {
         if (controlTalkedRecently(msg, bizaamType)) {
@@ -208,7 +208,6 @@ client.on('message', msg => {
                 messageSent = true;
             }
         }
-
     }
 
     if (msg_contains(msg, ' is worst pony')) {
@@ -217,7 +216,6 @@ client.on('message', msg => {
                 msg.channel.send(dparse("ans_worst_pony1",[msg.author]));
                 messageSent = true;
             }
-
         }
     }
 
@@ -231,6 +229,7 @@ client.on('message', msg => {
             }
         }
     }
+
     if(!messageSent){
         if(msg.isMemberMentioned(client.user)){
             msg.channel.send(dparse("ans_still_learning",[getShyEmoji()]));
@@ -242,6 +241,7 @@ client.on('message', msg => {
         }
     }
 });
+
 function sendCooldownMessage(msg, type, cooldownTarget) {
     switch (type) {
         case canniworstPonyType:
@@ -315,6 +315,7 @@ function getBizaamEmoji() {
             bizaamEmoji = "😃";
         }
     }
+
     return bizaamEmoji;
 }
 
@@ -325,6 +326,7 @@ function getHugEmoji() {
             hugEmoji = "🤗";
         }
     }
+
     return hugEmoji;
 }
 
@@ -374,8 +376,7 @@ async function updateChannel() {
     }
 }
 
-async function getChannelUploadID(channelName = "CanniSoda")
-{
+async function getChannelUploadID(channelName = "CanniSoda") {
     let options = {
         uri: "https://www.googleapis.com/youtube/v3/channels",
         qs: {
@@ -395,8 +396,7 @@ async function getChannelUploadID(channelName = "CanniSoda")
     }
 }
 
-async function getChannelUploadList(pageToken = "")
-{
+async function getChannelUploadList(pageToken = "") {
     if(channelUploadID === undefined) {
         let body = await getChannelUploadID();
         channelUploadID = body.body.items[0].contentDetails.relatedPlaylists.uploads;
@@ -441,12 +441,12 @@ function msg_starts(msg, text) {
         return false;
     }
 }
+
 function randomIntFromInterval(min, max) { //random number generator with min-max -merte
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function msg_contains_word(msg, word)
-{
+function msg_contains_word(msg, word) {
     let content = msg.content.toLowerCase();
     let wrd = word.toLowerCase();
     let wrdArray = content.split(" ");
@@ -466,7 +466,7 @@ function dparse(str) {
     try {
         return raw.replace(/%s/g, () => args[0][i++])
     }
-    catch (err) {
+    catch (error) {
         return raw.replace(/%s/g, () => args[i++])
     }
 }
@@ -476,7 +476,7 @@ function parse(str) {
     try {
         return str.replace(/%s/g, () => args[0][i++])
     }
-    catch (err) {
+    catch (error) {
         return str.replace(/%s/g, () => args[i++])
     }
 }
