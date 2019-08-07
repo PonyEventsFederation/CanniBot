@@ -111,7 +111,7 @@ client.on('message', msg => {
                     continue;
                 }
 
-                msg.channel.send(dparse("ans_boop", [msg.author, users[i].id]));  // not sure how to implement mention in json
+                msg.channel.send(dparse("ans_boop", [users[i]]));
                 messageSent = true;
             }
         }
