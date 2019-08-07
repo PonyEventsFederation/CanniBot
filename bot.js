@@ -250,10 +250,10 @@ function sendCooldownMessage(msg, type, cooldownTarget) {
             blockUser(msg, 300000);
             break;
         case loveCanniType:
-            var cooldownMessage = dparse("ans_cooldown_love",[msg.getErrorEmoji()]);
+            var cooldownMessage = dparse("ans_cooldown_love",[getErrorEmoji()]);
             break;
         default:
-            var cooldownMessage = dparse("ans_cooldown_default",[msg.author,msg.getErrorEmoji()]);
+            var cooldownMessage = dparse("ans_cooldown_default",[msg.author, getErrorEmoji()]);
     }
 
     if (channelMessaged.has(cooldownTarget)) {
