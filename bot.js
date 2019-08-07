@@ -107,8 +107,8 @@ client.on('message', msg => {
                 msg.channel.send(dparse("ans_boop", [msg.author, users[i].id]));  // not sure how to implement mention in json
                 messageSent = true;
             }
-            msg.delete(0);//make sure the bot gets manage text permissions , otherwise it will fail silently-Merte
         }
+
         return;
     }
 
