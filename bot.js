@@ -463,14 +463,22 @@ function msg_contains_word(msg, word)
 function dparse(str) {
     var raw = data[str];
     var args = [].slice.call(arguments, 1), i = 0;
-    try {return raw.replace(/%s/g, () => args[0][i++])}
-    catch {return raw.replace(/%s/g, () => args[i++])}
+    try {
+        return raw.replace(/%s/g, () => args[0][i++])
+    }
+    catch (err) {
+        return raw.replace(/%s/g, () => args[i++])
+    }
 }
 
 function parse(str) {
     var args = [].slice.call(arguments, 1), i = 0;
-    try {return str.replace(/%s/g, () => args[0][i++])}
-    catch {return str.replace(/%s/g, () => args[i++])}
+    try {
+        return str.replace(/%s/g, () => args[0][i++])
+    }
+    catch (err) {
+        return str.replace(/%s/g, () => args[i++])
+    }
 }
 
 client.login(auth.token);
