@@ -75,6 +75,12 @@ client.on('message', msg => {
             }
             return;
         }
+
+        // Nothing past this check should be executed when Canni is cross with someone.
+        if (userBlocked.has(msg.author.id)) {
+            return;
+        }
+
         if (msg_contains(msg, 'i love you')) {
             if (controlTalkedRecently(msg, loveCanniType)) {
                 msg.channel.send(dparse("ans_love",[msg.author,getLoveEmoji()]));
