@@ -25,7 +25,6 @@ var channelUploadID = undefined;
 var channelUploadList = undefined;
 
 var data = require('./data.json');
-var messaged = false;
 var bizaamEmoji = null;
 var hugEmoji = null;
 var loveEmoji = null;
@@ -261,7 +260,6 @@ function sendCooldownMessage(msg, type, cooldownTarget) {
     } else {
         msg.channel.send(cooldownMessage)
 
-        messaged = true;
         channelMessaged.add(cooldownTarget);
         setTimeout(() => {
             channelMessaged.delete(cooldownTarget);
