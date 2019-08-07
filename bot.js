@@ -136,7 +136,7 @@ client.on('message', msg => {
             }
             messageSent = true;
         }catch (e) {
-            msg.channel.send(dparse("ans_meme_error",[msg.author]))
+            msg.channel.send(dparse("ans_meme_error",[msg.author, getErrorEmoji()]))
         }
     }
 
