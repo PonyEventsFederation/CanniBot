@@ -1,6 +1,7 @@
 const rp = require('request-promise');
-
 const fs = require('fs');
+const auth = require('./auth.json');
+const data = require('./data.json');
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -20,12 +21,8 @@ const canniworstPonyType = 'canny-worst-pony';
 const loveCanniType = 'love-canni';
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
-const auth = require('./auth.json');
-
 var channelUploadID = undefined;
 var channelUploadList = undefined;
-
-var data = require('./data.json');
 var bizaamEmoji = null;
 var hugEmoji = null;
 var loveEmoji = null;
