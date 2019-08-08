@@ -119,6 +119,18 @@ client.on('message', msg => {
         return;
     }
 
+    if (msg_starts(msg,"hug")) {
+        if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
+            let user = msg.mentions.users.array()[0];
+            if (!userBlocked.has(user.id)) {
+                msg.channel.send(dparse("ans_hug",[user.id,msg.author,getHugEmoji()]));
+                messageSent = true;
+            }
+        }
+
+        return;
+    }
+
     // Random Fanta jokes.
     if (msg_contains_word(msg, "fanta") && (!msg_contains(msg, 'is best pony'))) {
         if (controlTalkedRecently(msg, fantaType)) {
@@ -193,17 +205,6 @@ client.on('message', msg => {
         if (msg_contains(msg, 'canni is worst pony') || msg_contains(msg, 'canni soda is worst pony')) {
             if (controlTalkedRecently(msg, canniworstPonyType, true, 60000, 'individual')) {
                 msg.channel.send(dparse("ans_worst_pony1",[msg.author]));
-                messageSent = true;
-            }
-        }
-    }
-
-    if (msg_starts(msg,"hug")) {
-        if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
-            let user = msg.mentions.users.array()[0];
-            if (!userBlocked.has(user.id)) {
-                msg.channel.send(dparse("ans_hug",[user.id,msg.author,getHugEmoji()]));
-                msg.delete(0);
                 messageSent = true;
             }
         }
