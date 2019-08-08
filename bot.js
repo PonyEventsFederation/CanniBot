@@ -135,10 +135,10 @@ client.on('message', msg => {
             msg.channel.send(dparse("ans_bizaam",[getBizaamEmoji()])).then(sentEmbed => {
                 sentEmbed.react(getBizaamEmoji())
             });
-
-            msg.react(getBizaamEmoji());
             messageSent = true;
         }
+
+        return;
     }
 
     if (msg_contains(msg, "assfart") && !msg_contains(msg, 'assfart is best pony')) {
