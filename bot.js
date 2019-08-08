@@ -27,7 +27,7 @@ var bizaamEmoji = null;
 var hugEmoji = null;
 var loveEmoji = null;
 var errorEmoji = null;
-var shyEmohi = null;
+var shyEmoji = null;
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -325,15 +325,15 @@ function getHugEmoji() {
 }
 
 function getShyEmoji() {
-    if (shyEmohi === null) {
-        shyEmohi = client.emojis.find(emoji => emoji.name.toLowerCase() === "shy");
+    if (shyEmoji === null) {
+        shyEmoji = client.emojis.find(emoji => emoji.name.toLowerCase() === "shy");
 
         // Generic code for when Galacon specific emoji are unavailable.
-        if (shyEmohi === null) {
-            shyEmohi = "😳";
+        if (shyEmoji === null) {
+            shyEmoji = "😳";
         }
     }
-    return shyEmohi;
+    return shyEmoji;
 }
 
 function getLoveEmoji() {
