@@ -15,6 +15,7 @@ const interjectType = 'interject';
 const canniBestPonyType = 'canni-best-pony';
 const bizaamBestPonyType = 'bizaam-best-pony';
 const assFartBestPonyType = 'assfart-best-pony';
+const fantaBestPonyType = 'fanta-best-pony';
 const canniworstPonyType = 'canny-worst-pony';
 const loveCanniType = 'love-canni';
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
@@ -119,12 +120,14 @@ client.on('message', msg => {
     }
 
     // Random Fanta jokes.
-    if (msg_contains_word(msg, "fanta")) {
+    if (msg_contains_word(msg, "fanta") && (!msg_contains(msg, 'is best pony'))) {
         if (controlTalkedRecently(msg, fantaType)) {
             let rndm = randomIntFromInterval(0, data["ans_fanta_list"].length-1);
             msg.channel.send(parse(data["ans_fanta_list"][rndm]));
             messageSent = true;
         }
+
+        return;
     }
 
     if (msg_contains(msg, "bizaam") && (!msg_contains(msg, 'is best pony'))) {
@@ -170,9 +173,14 @@ client.on('message', msg => {
                 msg.channel.send(dparse("ans_best_pony4",[msg.author]));
                 messageSent = true;
             }
-        }else {
-            if (controlTalkedRecently(msg, interjectType, false)) { // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
+        } else if (msg_contains(msg, 'fanta is best pony')) {
+            if (controlTalkedRecently(msg, fantaBestPonyType, false)) {
                 msg.channel.send(dparse("ans_best_pony5",[msg.author]));
+                messageSent = true;
+            }
+        } else {
+            if (controlTalkedRecently(msg, interjectType, false)) { // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
+                msg.channel.send(dparse("ans_best_pony_default",[msg.author]));
                 messageSent = true;
             }
         }
