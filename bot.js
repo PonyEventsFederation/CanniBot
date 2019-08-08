@@ -33,14 +33,14 @@ client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
     setInterval(() => {
         let now = Date.now();
-        let diff =  galaconDate - now;
+        let diff = galaconDate - now;
         var seconds = parseInt(diff) / 1000;
         let days = Math.floor(seconds / (3600 * 24));
-        seconds -= days*3600*24;
+        seconds -= days * 3600 * 24;
         let hrs = Math.floor(seconds / 3600);
         seconds -= hrs * 3600;
         let minutes = Math.floor(seconds / 60);
-        if(minutes < 10) { // Lazyness is real
+        if (minutes < 10) { // Lazyness is real
             client.user.setActivity(`Time to Galacon: ${days} days, ${hrs}:0${minutes} left! Hype!`, { type: 'PLAYING' });
         }
         else {
@@ -55,7 +55,7 @@ client.on('ready', () => {
 client.on('message', msg => {
     var messageSent = false;
 
-    if(msg.author.bot){
+    if (msg.author.bot) {
         return;
     }
 
@@ -82,7 +82,7 @@ client.on('message', msg => {
 
         if (msg_contains(msg, 'i love you')) {
             if (controlTalkedRecently(msg, loveCanniType)) {
-                msg.channel.send(dparse("ans_love",[msg.author,getLoveEmoji()]));
+                msg.channel.send(dparse("ans_love", [msg.author, getLoveEmoji()]));
                 messageSent = true;
             }
             return;
@@ -92,17 +92,16 @@ client.on('message', msg => {
             nextGalacon(msg);
             return;
         }
-     }
+    }
 
     if (userBlocked.has(msg.author.id)) {
         return;
     }
 
-    if (msg_starts(msg,'boop')) {
-        if(msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
+    if (msg_starts(msg, 'boop')) {
+        if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let users = msg.mentions.users.array();
-            for(let i = 0; i < users.length; i++)
-            {
+            for (let i = 0; i < users.length; i++) {
                 if (users[i].id == client.user.id) {
                     msg.channel.send(dparse("ans_self_boop", [msg.author, getShyEmoji()]));
                     continue;
@@ -116,11 +115,11 @@ client.on('message', msg => {
         return;
     }
 
-    if (msg_starts(msg,"hug")) {
+    if (msg_starts(msg, "hug")) {
         if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let user = msg.mentions.users.array()[0];
             if (!userBlocked.has(user.id)) {
-                msg.channel.send(dparse("ans_hug",[user.id,msg.author,getHugEmoji()]));
+                msg.channel.send(dparse("ans_hug", [user.id, msg.author, getHugEmoji()]));
                 messageSent = true;
             }
         }
@@ -131,7 +130,7 @@ client.on('message', msg => {
     // Random Fanta jokes.
     if (msg_contains_word(msg, "fanta") && (!msg_contains(msg, 'is best pony'))) {
         if (controlTalkedRecently(msg, fantaType)) {
-            let rndm = randomIntFromInterval(0, data["ans_fanta_list"].length-1);
+            let rndm = randomIntFromInterval(0, data["ans_fanta_list"].length - 1);
             msg.channel.send(parse(data["ans_fanta_list"][rndm]));
             messageSent = true;
         }
@@ -141,7 +140,7 @@ client.on('message', msg => {
 
     if (msg_contains(msg, "bizaam") && (!msg_contains(msg, 'is best pony'))) {
         if (controlTalkedRecently(msg, bizaamType)) {
-            msg.channel.send(dparse("ans_bizaam",[getBizaamEmoji()])).then(sentEmbed => {
+            msg.channel.send(dparse("ans_bizaam", [getBizaamEmoji()])).then(sentEmbed => {
                 sentEmbed.react(getBizaamEmoji())
             });
             messageSent = true;
@@ -152,14 +151,14 @@ client.on('message', msg => {
 
     if (msg_contains(msg, "assfart") && !msg_contains(msg, 'assfart is best pony')) {
         if (controlTalkedRecently(msg, assfartType)) {
-            msg.channel.send(dparse("ans_assfart",[msg.author]));
+            msg.channel.send(dparse("ans_assfart", [msg.author]));
             messageSent = true;
         }
 
         return;
     }
 
-    if (msg_starts(msg,"!when")) {
+    if (msg_starts(msg, "!when")) {
         nextGalacon(msg);
         return;
     }
@@ -167,32 +166,32 @@ client.on('message', msg => {
     if (msg_contains(msg, ' is best pony')) {
         if (msg_contains(msg, 'who is best pony')) {
             if (controlTalkedRecently(msg, bestPonyType)) {
-                msg.channel.send(dparse("ans_best_pony1",[msg.author,getBizaamEmoji()]));
+                msg.channel.send(dparse("ans_best_pony1", [msg.author, getBizaamEmoji()]));
                 messageSent = true;
             }
         } else if (msg_contains(msg, 'canni is best pony') || msg_contains(msg, 'canni soda is best pony')) {
             if (controlTalkedRecently(msg, canniBestPonyType)) {
-                msg.channel.send(dparse("ans_best_pony2",[msg.author]));
+                msg.channel.send(dparse("ans_best_pony2", [msg.author]));
                 messageSent = true;
             }
         } else if (msg_contains(msg, 'bizaam is best pony') || msg_contains(msg, `${getBizaamEmoji()} is best pony`)) {
             if (controlTalkedRecently(msg, bizaamBestPonyType, false)) { // Don't send CD message here. It's not required.
-                msg.channel.send(dparse("ans_best_pony3",[msg.author]));
+                msg.channel.send(dparse("ans_best_pony3", [msg.author]));
                 messageSent = true;
             }
         } else if (msg_contains(msg, 'assfart is best pony')) {
             if (controlTalkedRecently(msg, assFartBestPonyType, false)) { // Don't send CD message here. It's not required.
-                msg.channel.send(dparse("ans_best_pony4",[msg.author]));
+                msg.channel.send(dparse("ans_best_pony4", [msg.author]));
                 messageSent = true;
             }
         } else if (msg_contains(msg, 'fanta is best pony')) {
             if (controlTalkedRecently(msg, fantaBestPonyType, false)) {
-                msg.channel.send(dparse("ans_best_pony5",[msg.author]));
+                msg.channel.send(dparse("ans_best_pony5", [msg.author]));
                 messageSent = true;
             }
         } else {
             if (controlTalkedRecently(msg, interjectType, false)) { // Don't set a CD message here. It'll feel more natural if Canni doesn't respond every time in case people spam the command.
-                msg.channel.send(dparse("ans_best_pony_default",[msg.author]));
+                msg.channel.send(dparse("ans_best_pony_default", [msg.author]));
                 messageSent = true;
             }
         }
@@ -201,18 +200,18 @@ client.on('message', msg => {
     if (msg_contains(msg, ' is worst pony')) {
         if (msg_contains(msg, 'canni is worst pony') || msg_contains(msg, 'canni soda is worst pony')) {
             if (controlTalkedRecently(msg, canniworstPonyType, true, 60000, 'individual')) {
-                msg.channel.send(dparse("ans_worst_pony1",[msg.author]));
+                msg.channel.send(dparse("ans_worst_pony1", [msg.author]));
                 messageSent = true;
             }
         }
     }
 
-    if(!messageSent){
-        if(msg.isMemberMentioned(client.user)){
-            msg.channel.send(dparse("ans_still_learning",[getShyEmoji()]));
-        }else{
+    if (!messageSent) {
+        if (msg.isMemberMentioned(client.user)) {
+            msg.channel.send(dparse("ans_still_learning", [getShyEmoji()]));
+        } else {
             let rnd = randomIntFromInterval(0, 200);
-            if(rnd === 10){
+            if (rnd === 10) {
                 msg.channel.send(`Boop ${msg.author}! I'm bored!`)
             }
         }
@@ -220,32 +219,32 @@ client.on('message', msg => {
 });
 
 function nextGalacon(msg) {
-    msg.channel.send(dparse("ans_next_gala1",[getBizaamEmoji()]));
+    msg.channel.send(dparse("ans_next_gala1", [getBizaamEmoji()]));
     let now = Date.now();
-    let diff =  galaconDate - now;
+    let diff = galaconDate - now;
     var seconds = parseInt(diff) / 1000;
     let days = Math.floor(seconds / (3600 * 24));
-    seconds -= days*3600*24;
+    seconds -= days * 3600 * 24;
     let hrs = Math.floor(seconds / 3600);
     seconds -= hrs * 3600;
     let minutes = Math.floor(seconds / 60);
     seconds -= minutes * 60;
-    msg.channel.send(dparse("ans_next_gala2",[days,hrs,minutes,Math.floor(seconds)]));
+    msg.channel.send(dparse("ans_next_gala2", [days, hrs, minutes, Math.floor(seconds)]));
     messageSent = true;
 }
 
 function sendCooldownMessage(msg, type, cooldownTarget) {
     switch (type) {
         case canniworstPonyType:
-            var cooldownMessage = dparse("ans_cooldown_worst",[msg.author]);
+            var cooldownMessage = dparse("ans_cooldown_worst", [msg.author]);
             cooldownTarget = msg.author.id;
             blockUser(msg, 300000);
             break;
         case loveCanniType:
-            var cooldownMessage = dparse("ans_cooldown_love",[getErrorEmoji()]);
+            var cooldownMessage = dparse("ans_cooldown_love", [getErrorEmoji()]);
             break;
         default:
-            var cooldownMessage = dparse("ans_cooldown_default",[msg.author, getErrorEmoji()]);
+            var cooldownMessage = dparse("ans_cooldown_default", [msg.author, getErrorEmoji()]);
     }
 
     if (channelMessaged.has(cooldownTarget)) {
@@ -279,9 +278,9 @@ function controlTalkedRecently(msg, type, cooldownmessage = true, cooldowntime =
         return false;
     } else {
         talkedRecently.add(cooldownTarget);
-                setTimeout(() => {
-                  talkedRecently.delete(cooldownTarget);
-                }, cooldowntime);
+        setTimeout(() => {
+            talkedRecently.delete(cooldownTarget);
+        }, cooldowntime);
         return true;
     }
 }
@@ -313,11 +312,11 @@ function getBizaamEmoji() {
 }
 
 function getHugEmoji() {
-    if(hugEmoji === null) {
+    if (hugEmoji === null) {
         hugEmoji = client.emojis.find(emoji => emoji.name.toLowerCase() === "hug");
 
         // Generic code for when Galacon specific emoji are unavailable.
-        if(hugEmoji === null) {
+        if (hugEmoji === null) {
             hugEmoji = "🤗";
         }
     }
@@ -326,11 +325,11 @@ function getHugEmoji() {
 }
 
 function getShyEmoji() {
-    if(shyEmohi === null) {
+    if (shyEmohi === null) {
         shyEmohi = client.emojis.find(emoji => emoji.name.toLowerCase() === "shy");
 
         // Generic code for when Galacon specific emoji are unavailable.
-        if(shyEmohi === null) {
+        if (shyEmohi === null) {
             shyEmohi = "😳";
         }
     }
@@ -342,7 +341,7 @@ function getLoveEmoji() {
         loveEmoji = client.emojis.find(emoji => emoji.name.toLowerCase() === "love");
 
         // Generic code for when Galacon specific emoji are unavailable.
-        if(loveEmoji === null) {
+        if (loveEmoji === null) {
             loveEmoji = "🤗";
         }
     }
@@ -355,7 +354,7 @@ function getErrorEmoji() {
         errorEmoji = client.emojis.find(emoji => emoji.name.toLowerCase() === "error");
 
         // Generic code for when Galacon specific emoji are unavailable.
-        if(errorEmoji === null) {
+        if (errorEmoji === null) {
             errorEmoji = "😫";
         }
     }
@@ -366,13 +365,13 @@ function getErrorEmoji() {
 async function updateChannel() {
     channelUploadList = [];
     let token = "";
-    while(token !== undefined) {
+    while (token !== undefined) {
         const uploads = await getChannelUploadList(token);
-        if(!uploads) {
+        if (!uploads) {
             break;
         }
-        for(let i = 0; i < uploads.body.items.length; i++)
-        channelUploadList.push(uploads.body.items[i]);
+        for (let i = 0; i < uploads.body.items.length; i++)
+            channelUploadList.push(uploads.body.items[i]);
         token = uploads.body.nextPageToken;
     }
 }
@@ -381,12 +380,12 @@ async function getChannelUploadID(channelName = "CanniSoda") {
     let options = {
         uri: "https://www.googleapis.com/youtube/v3/channels",
         qs: {
-            part:           "contentDetails",
-            forUsername:    channelName,
-            key:            auth.youtube
+            part: "contentDetails",
+            forUsername: channelName,
+            key: auth.youtube
         },
-        resolveWithFullResponse:    true,
-        json:   true
+        resolveWithFullResponse: true,
+        json: true
     }
     try {
         let response = await rp(options);
@@ -398,22 +397,22 @@ async function getChannelUploadID(channelName = "CanniSoda") {
 }
 
 async function getChannelUploadList(pageToken = "") {
-    if(channelUploadID === undefined) {
+    if (channelUploadID === undefined) {
         let body = await getChannelUploadID();
         channelUploadID = body.body.items[0].contentDetails.relatedPlaylists.uploads;
     }
     let options = {
         uri: "https://www.googleapis.com/youtube/v3/playlistItems",
         qs: {
-            part:           "snippet",
-            playlistId:     channelUploadID,
-            key:            auth.youtube,
-            maxResults:     50
+            part: "snippet",
+            playlistId: channelUploadID,
+            key: auth.youtube,
+            maxResults: 50
         },
-        resolveWithFullResponse:    true,
-        json:   true
+        resolveWithFullResponse: true,
+        json: true
     }
-    if(pageToken !== "")
+    if (pageToken !== "")
         options.qs.pageToken = pageToken;
     try {
         let response = await rp(options);
@@ -427,7 +426,7 @@ async function getChannelUploadList(pageToken = "") {
 
 // "msg_contains(msg, text)" is a shorter version of "msg.content.toLowerCase().includes(text)"
 function msg_contains(msg, text) {
-    if(msg.content.toLowerCase().includes(text)) {
+    if (msg.content.toLowerCase().includes(text)) {
         return true;
     } else {
         return false;
@@ -436,7 +435,7 @@ function msg_contains(msg, text) {
 
 // "msg_starts(msg, text)" is a shorter version of "msg.content.toLowerCase().startsWith(text)"
 function msg_starts(msg, text) {
-    if(msg.content.toLowerCase().startsWith(text)) {
+    if (msg.content.toLowerCase().startsWith(text)) {
         return true;
     } else {
         return false;
@@ -444,16 +443,15 @@ function msg_starts(msg, text) {
 }
 
 function randomIntFromInterval(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
+    return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 function msg_contains_word(msg, word) {
     let content = msg.content.toLowerCase();
     let wrd = word.toLowerCase();
     let wrdArray = content.split(" ");
-    for(var i = 0; i < wrdArray.length; i++)
-    {
-        if(wrd === wrdArray[i])
+    for (var i = 0; i < wrdArray.length; i++) {
+        if (wrd === wrdArray[i])
             return true;
     }
     return false;
