@@ -24,7 +24,8 @@
     "ans_best_pony2":"%s I sure am!",
     "ans_best_pony3":"%s A bizaam isn't a pony, silly...",
     "ans_best_pony4":"%s Rude!",
-    "ans_best_pony5":"%s Nu-uh. I am best pony!",
+    "ans_best_pony5":"%s Is this a GalaCon thing?",
+    "ans_best_pony_default":"%s Nu-uh. I am best pony!",
 
     "ans_worst_pony1":"%s Why are you so mean to me?",
     "ans_hug":"Hey <@%s>! %s hugged you %s",
