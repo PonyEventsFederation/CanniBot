@@ -146,10 +146,13 @@ client.on('message', msg => {
             msg.channel.send(dparse("ans_assfart",[msg.author]));
             messageSent = true;
         }
+
+        return;
     }
 
     if (msg_starts(msg,"!when")) {
         nextGalacon(msg);
+        return;
     }
 
     if (msg_contains(msg, ' is best pony')) {
