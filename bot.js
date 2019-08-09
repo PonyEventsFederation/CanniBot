@@ -119,6 +119,11 @@ client.on('message', msg => {
         if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let user = msg.mentions.users.array()[0];
             if (!userBlocked.has(user.id)) {
+                if (user.id == client.user.id) {
+                    msg.channel.send(dparse("ans_self_hug", [msg.author, getHugEmoji()]));
+                    return;
+                }
+
                 msg.channel.send(dparse("ans_hug", [user.id, msg.author, getHugEmoji()]));
                 messageSent = true;
             }
