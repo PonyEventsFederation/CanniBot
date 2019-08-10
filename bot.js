@@ -124,14 +124,16 @@ client.on('message', msg => {
             if (msg_contains(msg,"status report")) {
                 msg.channel.send(dparse("ans_status_report", [msg.guild.memberCount]));
             }
-            if (msg_contains(msg,"list devs")) {
-                dev_ids.forEach(item => users += msg.guild.members.find(m => m.id === item) +"\n");
-                msg.channel.send(dparse("ans_list_dev", [users]));
-            }
 
-            if (msg_contains(msg,"list devs masters")) {
-                dev_master_ids.forEach(item => users += msg.guild.members.find(m => m.id === item) +"\n");
-                msg.channel.send(dparse("ans_list_dev_masters", [users]));
+            if (msg_contains(msg,"list devs")){
+                if (msg_contains(msg,"list devs masters")) {
+                    dev_master_ids.forEach(item => users += msg.guild.members.find(m => m.id === item) +"\n");
+                    msg.channel.send(dparse("ans_list_dev_masters", [users]));
+                }
+                else {
+                    dev_ids.forEach(item => users += msg.guild.members.find(m => m.id === item) +"\n");
+                    msg.channel.send(dparse("ans_list_dev", [users]));
+                }
             }
 
             if (msg_contains(msg, "member id")) {
