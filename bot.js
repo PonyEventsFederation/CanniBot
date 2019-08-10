@@ -2,6 +2,7 @@ const rp = require('request-promise');
 const fs = require('fs');
 const auth = require('./auth.json');
 const data = require('./data.json');
+const bot_data = require('./bot_ids.json');
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -19,6 +20,7 @@ const assFartBestPonyType = 'assfart-best-pony';
 const fantaBestPonyType = 'fanta-best-pony';
 const canniworstPonyType = 'canny-worst-pony';
 const loveCanniType = 'love-canni';
+const boopguard = 'boop-guard';
 const galaconDate = Date.parse('01 aug 2020 09:00:00 GMT+2');
 
 var channelUploadID = undefined;
@@ -31,6 +33,7 @@ var shyEmoji = null;
 var ids = require('./ids.json');
 var dev_ids = ids[0];
 var dev_master_ids = ids[1];
+var guard_id = bot_data["guard_id"];
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -59,6 +62,17 @@ client.on('message', msg => {
     var messageSent = false;
 
     if (msg.author.bot) {
+        if (msg.isMemberMentioned(client.user)) {
+            if (msg.author.id === guard_id){
+                if (msg_contains(msg,"hey, don´t boop me.")) {
+                    setTimeout(() => {
+                        msg.channel.send(dparse("ans_boop_guard_response", [msg.author]));
+                    }, 2000);
+                }
+                messageSent = true;
+                return;
+            }
+        }
         return;
     }
 
@@ -101,20 +115,21 @@ client.on('message', msg => {
             return;
         }
 
+        var user;
         if (auth_dev_master(msg)) {
             if (msg_contains(msg, "add dev")) {
-                if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 1) {
-                    let users = msg.mentions.users.array();
-                    id_add(users[1].id);
-                    msg.channel.send(dparse("ans_dev_add", [users[1]]));
+                if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length === 2) {
+                    user = msg.mentions.users.array().find(x => x.id !== client.user.id);
+                    id_add(user.id);
+                    msg.channel.send(dparse("ans_add_dev", [user]));
                 }
             }
 
             if (msg_contains(msg, "remove dev")) {
-                if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 1) {
-                    let users = msg.mentions.users.array();
-                    id_remove(users[1].id);
-                    msg.channel.send(dparse("ans_remove_dev", [users[1]]));
+                if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length === 2) {
+                    user = msg.mentions.users.array().find(x => x.id !== client.user.id);
+                    id_remove(user.id);
+                    msg.channel.send(dparse("ans_remove_dev", [user]));
                 }
             }
         }
@@ -126,21 +141,20 @@ client.on('message', msg => {
             }
 
             if (msg_contains(msg,"list devs")){
-                if (msg_contains(msg,"list devs masters")) {
-                    dev_master_ids.forEach(item => users += msg.guild.members.find(m => m.id === item) +"\n");
-                    msg.channel.send(dparse("ans_list_dev_masters", [users]));
-                }
-                else {
-                    dev_ids.forEach(item => users += msg.guild.members.find(m => m.id === item) +"\n");
-                    msg.channel.send(dparse("ans_list_dev", [users]));
-                }
+                dev_ids.forEach(item => users += msg.guild.members.find(m => m.id === item) +"\n");
+                msg.channel.send(dparse("ans_list_dev", [users]));
+            }
+
+            if (msg_contains(msg,"list master devs")) {
+                dev_master_ids.forEach(item => users += msg.guild.members.find(m => m.id === item) +"\n");
+                msg.channel.send(dparse("ans_list_master_devs", [users]));
             }
 
             if (msg_contains(msg, "member id")) {
                 msg.delete();
-                if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 1) {
-                    let users = msg.mentions.users.array();
-                    msg.channel.send(dparse("ans_member_id", [users[1].username,users[1].id])).then(message => {message.delete(8000)});
+                if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length === 2) {
+                    user = msg.mentions.users.array().find(x => x.id !== client.user.id);
+                    msg.channel.send(dparse("ans_member_id", [user.username,user.id])).then(message => {message.delete(8000);});
                 }
             }
             if (msg_contains(msg, "channel id")) {
@@ -158,14 +172,23 @@ client.on('message', msg => {
     if (msg_starts(msg, 'boop')) {
         if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 0) {
             let users = msg.mentions.users.array();
-            for (let i = 0; i < users.length; i++) {
-                if (users[i].id == client.user.id) {
-                    msg.channel.send(dparse("ans_self_boop", [msg.author, getShyEmoji()]));
-                    continue;
+            if (users[0].id === guard_id) {
+                if (controlTalkedRecently(msg, boopguard, false,300000)) {
+                    msg.channel.send(dparse("ans_boop", [users[0]]));
+                } else {
+                    msg.channel.send(dparse("ans_boop_guard_cooldown"))
                 }
-
-                msg.channel.send(dparse("ans_boop", [users[i]]));
                 messageSent = true;
+            } else {
+                for (let i = 0; i < users.length; i++) {
+                    if (users[i].id == client.user.id) {
+                        msg.channel.send(dparse("ans_self_boop", [msg.author, getShyEmoji()]));
+                        continue;
+                    }
+
+                    msg.channel.send(dparse("ans_boop", [users[i]]));
+                    messageSent = true;
+                }
             }
         }
 
@@ -313,7 +336,7 @@ function sendCooldownMessage(msg, type, cooldownTarget) {
     if (channelMessaged.has(cooldownTarget)) {
         // Do nothing. We don't want to spam everyone all the time.
     } else {
-        msg.channel.send(cooldownMessage)
+        msg.channel.send(cooldownMessage);
 
         channelMessaged.add(cooldownTarget);
         setTimeout(() => {
@@ -321,6 +344,11 @@ function sendCooldownMessage(msg, type, cooldownTarget) {
         }, 60000);
 
     }
+}
+
+//not implemented...
+function noPermission(msg) {
+    msg.channel.send(dparse("ans_no_permisson",[msg.author]))
 }
 
 // "controlTalkedRecently" simplifies the antispam check. Sends the cooldown message as default. Retruns true when message can be send.
@@ -513,6 +541,20 @@ function msg_contains_word(msg, word) {
     return false;
 }
 
+function msg_starts_mentioned(msg, text) {
+    var content = msg.content.toLowerCase().split(">")[1];
+    if (content[0] === " ") {
+        if (content[1] === " ") {
+            return content.substring(2).startsWith(text);
+        }
+        return content.substring(1).startsWith(text);
+    }
+    return content.startsWith(text);
+
+
+    //return .startsWith(text);
+}
+
 
 //parses variables into strings from data. After string argument a list element with the variables is required.
 function dparse(str) {
@@ -522,7 +564,7 @@ function dparse(str) {
         return raw.replace(/%s/g, () => args[0][i++])
     }
     catch (error) {
-        return raw.replace(/%s/g, () => args[i++])
+        return raw.replace(/%s/g, () => args[i++]);
     }
 }
 
@@ -545,7 +587,7 @@ function auth_dev_master(msg) {
 }
 
 // change this variable before proper deployment
-var write_to_file = false;
+var write_to_file = true;
 //with nodemon bot will restart after ids.json is rewritten
 function id_add(id) {
     if (!dev_ids.includes(id)) {

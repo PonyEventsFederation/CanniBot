@@ -41,7 +41,10 @@
     "ans_debug_author_id": "Your id is: %s",
     "ans_status_report": "All seems to be fine.\nThere are currently: %s server members.",
     "ans_list_dev": "The developers are:\n%s",
-    "ans_list_dev_masters": "The developer masters are:\n%s",
+    "ans_list_master_devs": "The developer masters are:\n%s",
     "ans_member_id" : "The id of %s is: %s",
-    "ans_channel_id": "The channel id is : %s"
+    "ans_channel_id": "The channel id is : %s",
+    "ans_boop_guard_cooldown": "I think he doesn´t want to be disturbed right now...",
+    "ans_boop_guard_response": "%s Sorry...",
+    "ans_no_permisson": "%s You don´t have the permission to do that."
 }
