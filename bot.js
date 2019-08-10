@@ -106,7 +106,7 @@ client.on('message', msg => {
                 if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 1) {
                     let users = msg.mentions.users.array();
                     id_add(users[1].id);
-                    msg.channel.send(dparse("ans_dev_add", [users[1]]));
+                    msg.channel.send(dparse("ans_add_dev", [users[1]]));
                 }
             }
 
