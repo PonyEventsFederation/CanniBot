@@ -12,7 +12,9 @@
         "Soaking a twig in Coke is nice, but soaking a twig in Fanta? \n... Fanta stick.",
         "What's so funny about Fanta?",
         "Fanta is Canni Bot fuel.",
-        "Perry doesn't like Fanta jokes..."
+        "Perry doesn't like Fanta jokes...",
+        "I think you are Fanta stick.",
+        "I've always dreamed of swimming in an ocean of orange soda\nIt´s a Fanta sea of mine"
     ],
 
     "ans_bizaam":"%s BIIZAAAAAMM!!!",
@@ -29,10 +31,17 @@
 
     "ans_worst_pony1":"%s Why are you so mean to me?",
     "ans_hug":"Hey <@%s>! %s hugged you %s",
-    "ans_self_hug": "Awwww. That's very sweet of you. \nThank you %s. %s",
     "ans_still_learning":"I'm sorry, I don't understand what you're saying, I'm still learning. \nPlease don't be mad at me. %s",
     "ans_cooldown_worst":"%s Fine, I'm not talking to you anymore for a while.",
     "ans_cooldown_love":"I cannot handle this much love! %s",
-    "ans_cooldown_default":"Hello %s! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment! %s"
+    "ans_cooldown_default":"Hello %s! My creator added a 1 minute cooldown to prevent my circuits from overheating. \nPlease let me rest for a moment! %s",
 
+    "ans_add_dev": "%s You are now a developer of me.\nDon´t mess it up...",
+    "ans_remove_dev": "%s You have been sucessfully removed as dev. Still thank you for your work.",
+    "ans_debug_author_id": "Your id is: %s",
+    "ans_status_report": "All seems to be fine.\nThere are currently: %s server members.",
+    "ans_list_dev": "The developers are:\n%s",
+    "ans_list_dev_masters": "The developer masters are:\n%s",
+    "ans_member_id" : "The id of %s is: %s",
+    "ans_channel_id": "The channel id is : %s"
 }
