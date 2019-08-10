@@ -28,6 +28,9 @@ var hugEmoji = null;
 var loveEmoji = null;
 var errorEmoji = null;
 var shyEmoji = null;
+var ids = require('./ids.json');
+var dev_ids = ids[0];
+var dev_master_ids = ids[1];
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -80,6 +83,11 @@ client.on('message', msg => {
             return;
         }
 
+        if (msg_contains(msg, "debug author id")){
+            msg.channel.send(dparse("ans_debug_author_id", [msg.author.id])).then(message => {message.delete(8000); msg.delete(8000);});
+            return;
+        }
+
         if (msg_contains(msg, 'i love you')) {
             if (controlTalkedRecently(msg, loveCanniType)) {
                 msg.channel.send(dparse("ans_love", [msg.author, getLoveEmoji()]));
@@ -90,6 +98,53 @@ client.on('message', msg => {
 
         if (msg_contains(msg, 'when is galacon')) {
             nextGalacon(msg);
+            return;
+        }
+
+        if (auth_dev_master(msg)) {
+            if (msg_contains(msg, "add dev")) {
+                if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 1) {
+                    let users = msg.mentions.users.array();
+                    id_add(users[1].id);
+                    msg.channel.send(dparse("ans_dev_add", [users[1]]));
+                }
+            }
+
+            if (msg_contains(msg, "remove dev")) {
+                if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 1) {
+                    let users = msg.mentions.users.array();
+                    id_remove(users[1].id);
+                    msg.channel.send(dparse("ans_remove_dev", [users[1]]));
+                }
+            }
+        }
+
+        if (auth_dev(msg) || auth_dev_master(msg)) {
+            var users = "";
+            if (msg_contains(msg,"status report")) {
+                msg.channel.send(dparse("ans_status_report", [msg.guild.memberCount]));
+            }
+            if (msg_contains(msg,"list devs")) {
+                dev_ids.forEach(item => users += msg.guild.members.find(m => m.id === item) +"\n");
+                msg.channel.send(dparse("ans_list_dev", [users]));
+            }
+
+            if (msg_contains(msg,"list devs masters")) {
+                dev_master_ids.forEach(item => users += msg.guild.members.find(m => m.id === item) +"\n");
+                msg.channel.send(dparse("ans_list_dev_masters", [users]));
+            }
+
+            if (msg_contains(msg, "member id")) {
+                msg.delete();
+                if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 1) {
+                    let users = msg.mentions.users.array();
+                    msg.channel.send(dparse("ans_member_id", [users[1].username,users[1].id])).then(message => {message.delete(8000)});
+                }
+            }
+            if (msg_contains(msg, "channel id")) {
+                msg.delete();
+                msg.channel.send(dparse("ans_channel_id", [msg.channel.id])).then(message => {message.delete(8000)});
+            }
             return;
         }
     }
@@ -239,17 +294,18 @@ function nextGalacon(msg) {
 }
 
 function sendCooldownMessage(msg, type, cooldownTarget) {
+    var cooldownMessage;
     switch (type) {
         case canniworstPonyType:
-            var cooldownMessage = dparse("ans_cooldown_worst", [msg.author]);
+            cooldownMessage = dparse("ans_cooldown_worst", [msg.author]);
             cooldownTarget = msg.author.id;
             blockUser(msg, 300000);
             break;
         case loveCanniType:
-            var cooldownMessage = dparse("ans_cooldown_love", [getErrorEmoji()]);
+            cooldownMessage = dparse("ans_cooldown_love", [getErrorEmoji()]);
             break;
         default:
-            var cooldownMessage = dparse("ans_cooldown_default", [msg.author, getErrorEmoji()]);
+            cooldownMessage = dparse("ans_cooldown_default", [msg.author, getErrorEmoji()]);
     }
 
     if (channelMessaged.has(cooldownTarget)) {
@@ -267,12 +323,13 @@ function sendCooldownMessage(msg, type, cooldownTarget) {
 
 // "controlTalkedRecently" simplifies the antispam check. Sends the cooldown message as default. Retruns true when message can be send.
 function controlTalkedRecently(msg, type, cooldownmessage = true, cooldowntime = 60000, target = 'channel') {
+    var cooldownTarget;
     switch (target) {
         case 'channel':
-            var cooldownTarget = msg.channel.id + type;
+            cooldownTarget = msg.channel.id + type;
             break;
         case 'individual':
-            var cooldownTarget = msg.author.id;
+            cooldownTarget = msg.author.id;
             break;
     }
 
@@ -431,20 +488,12 @@ async function getChannelUploadList(pageToken = "") {
 
 // "msg_contains(msg, text)" is a shorter version of "msg.content.toLowerCase().includes(text)"
 function msg_contains(msg, text) {
-    if (msg.content.toLowerCase().includes(text)) {
-        return true;
-    } else {
-        return false;
-    }
+    return msg.content.toLowerCase().includes(text);
 }
 
 // "msg_starts(msg, text)" is a shorter version of "msg.content.toLowerCase().startsWith(text)"
 function msg_starts(msg, text) {
-    if (msg.content.toLowerCase().startsWith(text)) {
-        return true;
-    } else {
-        return false;
-    }
+    return msg.content.toLowerCase().startsWith(text);
 }
 
 function randomIntFromInterval(min, max) {
@@ -483,6 +532,45 @@ function parse(str) {
     catch (error) {
         return str.replace(/%s/g, () => args[i++])
     }
+}
+
+function auth_dev(msg) {
+    return dev_ids.includes(msg.author.id);
+}
+
+function auth_dev_master(msg) {
+    return dev_master_ids.includes(msg.author.id);
+}
+
+// change this variable before proper deployment
+var write_to_file = false;
+//with nodemon bot will restart after ids.json is rewritten
+function id_add(id) {
+    if (!dev_ids.includes(id)) {
+        dev_ids.push(id);
+        ids = [dev_ids, dev_master_ids];
+        if (write_to_file) {
+            fs.writeFile('ids.json', JSON.stringify(ids), function(err) {
+            if (err) throw err;
+            });
+        }
+        return true;
+    }
+    return false;
+}
+
+function id_remove(id) {
+    if (dev_ids.includes(id)) {
+        dev_ids = dev_ids.filter(item => item !== id);
+        ids = [dev_ids, dev_master_ids];
+        if (write_to_file) {
+            fs.writeFile('ids.json', JSON.stringify(ids), function(err) {
+                if (err) throw err;
+            });
+        }
+        return true;
+    }
+    return false;
 }
 
 client.login(auth.token);
