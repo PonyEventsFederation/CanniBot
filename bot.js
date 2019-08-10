@@ -105,7 +105,7 @@ client.on('message', msg => {
             if (msg_contains(msg, "add dev")) {
                 if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 1) {
                     let users = msg.mentions.users.array();
-                    id_add(users[1].id);
+                    id_add(users[0].id);
                     msg.channel.send(dparse("ans_add_dev", [users[1]]));
                 }
             }
@@ -113,7 +113,7 @@ client.on('message', msg => {
             if (msg_contains(msg, "remove dev")) {
                 if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 1) {
                     let users = msg.mentions.users.array();
-                    id_remove(users[1].id);
+                    id_remove(users[0].id);
                     msg.channel.send(dparse("ans_remove_dev", [users[1]]));
                 }
             }
@@ -140,7 +140,7 @@ client.on('message', msg => {
                 msg.delete();
                 if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length > 1) {
                     let users = msg.mentions.users.array();
-                    msg.channel.send(dparse("ans_member_id", [users[1].username,users[1].id])).then(message => {message.delete(8000)});
+                    msg.channel.send(dparse("ans_member_id", [users[0].username,users[0].id])).then(message => {message.delete(8000)});
                 }
             }
             if (msg_contains(msg, "channel id")) {
