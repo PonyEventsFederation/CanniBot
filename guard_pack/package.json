@@ -1,0 +1,15 @@
+{
+	"name": "ponybot_guard",
+	"version": "1.0.0",
+	"description": "PONIES",
+	"main": "bot_guard.js",
+	"author": "xraydylan",
+	"dependencies": {
+		"discord.io": "^2.5.3",
+		"discord.js": "^11.5.1",
+		"nodemon": "^1.19.1",
+		"request": "^2.88.0",
+		"request-promise": "^4.2.4",
+		"winston": "^3.2.1"
+	}
+}
