@@ -532,6 +532,7 @@ function randomIntFromInterval(min, max) {
 
 function msg_contains_word(msg, word) {
     let content = msg.content.toLowerCase();
+    content = content.replace(/[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g, "");
     let wrd = word.toLowerCase();
     let wrdArray = content.split(" ");
     for (var i = 0; i < wrdArray.length; i++) {
