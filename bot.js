@@ -34,6 +34,16 @@ var ids = require('./ids.json');
 var dev_ids = ids[0];
 var dev_master_ids = ids[1];
 var guard_id = bot_data["guard_id"];
+var write_to_file = false;
+
+// Try setting the write_to_file variable from the config.json file
+// If it is not present, or something else is wrong with it, we'll stick to the default value (false)
+try {
+    const config = require('./config.json');
+    write_to_file = config.write_to_file;
+} catch (ex) {
+    console.log('Unable to read config. Write to file set to false');
+}
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -587,8 +597,6 @@ function auth_dev_master(msg) {
     return dev_master_ids.includes(msg.author.id);
 }
 
-// change this variable before proper deployment
-var write_to_file = true;
 //with nodemon bot will restart after ids.json is rewritten
 function id_add(id) {
     if (!dev_ids.includes(id)) {
