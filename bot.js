@@ -132,6 +132,7 @@ client.on('message', msg => {
                     user = msg.mentions.users.array().find(x => x.id !== client.user.id);
                     id_add(user.id);
                     msg.channel.send(dparse("ans_add_dev", [user]));
+                    messageSent = true;
                 }
             }
 
@@ -140,6 +141,7 @@ client.on('message', msg => {
                     user = msg.mentions.users.array().find(x => x.id !== client.user.id);
                     id_remove(user.id);
                     msg.channel.send(dparse("ans_remove_dev", [user]));
+                    messageSent = true;
                 }
             }
         }
@@ -148,16 +150,19 @@ client.on('message', msg => {
             var users = "";
             if (msg_contains(msg,"status report")) {
                 msg.channel.send(dparse("ans_status_report", [msg.guild.memberCount]));
+                messageSent = true;
             }
 
             if (msg_contains(msg,"list devs")){
                 dev_ids.forEach(item => users += msg.guild.members.find(m => m.id === item) +"\n");
                 msg.channel.send(dparse("ans_list_dev", [users]));
+                messageSent = true;
             }
 
             if (msg_contains(msg,"list master devs")) {
                 dev_master_ids.forEach(item => users += msg.guild.members.find(m => m.id === item) +"\n");
                 msg.channel.send(dparse("ans_list_master_devs", [users]));
+                messageSent = true;
             }
 
             if (msg_contains(msg, "member id")) {
@@ -165,13 +170,14 @@ client.on('message', msg => {
                 if (msg.mentions !== null && !msg.mentions.everyone && msg.mentions.users.array().length === 2) {
                     user = msg.mentions.users.array().find(x => x.id !== client.user.id);
                     msg.channel.send(dparse("ans_member_id", [user.username,user.id])).then(message => {message.delete(8000);});
+                    messageSent = true;
                 }
             }
             if (msg_contains(msg, "channel id")) {
                 msg.delete();
                 msg.channel.send(dparse("ans_channel_id", [msg.channel.id])).then(message => {message.delete(8000)});
+                messageSent = true;
             }
-            return;
         }
     }
 
