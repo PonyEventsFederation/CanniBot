@@ -264,6 +264,12 @@ client.on('message', msg => {
         return;
     }
 
+    if (msg_starts(msg, '!help')) {
+        msg.author.send(dparse("ans_help", [msg.author]));
+        messageSent = true;
+        return;
+    }
+
     if (msg_contains(msg, ' is best pony')) {
         if (msg_contains(msg, 'who is best pony')) {
             if (controlTalkedRecently(msg, bestPonyType)) {
